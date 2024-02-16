@@ -9,7 +9,7 @@ public abstract class PlayerControlBase:MonoBehaviour
     {
         CellWasSelected?.Invoke(cell,color);
     }
-
+    
     public void Activate()
     {
         gameObject.SetActive(true);

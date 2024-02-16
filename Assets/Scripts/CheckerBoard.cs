@@ -4,6 +4,7 @@ public class CheckerBoard : MonoBehaviour
 {
     private GameBoardCell[,] _cells;
     public Checker checkerPrefab;
+    public GameObject checkersParent;
     public GameBoardCell gameBoardCellPrefab;
     private readonly int _rows = 8;
     private readonly int _colums = 8;
@@ -57,7 +58,7 @@ public class CheckerBoard : MonoBehaviour
 
     private void SpawnAndInitColorForChecker(GameBoardCell currentGameBoardCell, GameColor color)
     {
-        var checker = Instantiate(checkerPrefab);
+        var checker = Instantiate(checkerPrefab,checkersParent.transform);
         checker.Init(color);
         currentGameBoardCell.Place(checker);
     }

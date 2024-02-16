@@ -4,8 +4,12 @@ using UnityEngine;
 public class GameBoardCell : MonoBehaviour
 {
     public Transform anchor;
-    private Checker PlacedChecker { get; set; }
+    public Checker PlacedChecker { get; set; }
     public bool HasRisenPlacedObject { get; private set; }
+    public bool IsEmpty
+    {
+        get { return PlacedChecker == null; }
+    }
 
     public void Place(Checker checker)
     {
@@ -27,20 +31,14 @@ public class GameBoardCell : MonoBehaviour
         if (PlacedChecker == null) return;
         
         var position = PlacedChecker.transform.position;
-        PlacedChecker.transform.DOMove( new Vector3(position.x, anchor.transform.position.y, position.z),0.5f);
+        DoTweenMovement(position);
         HasRisenPlacedObject = false;
-    }
-    
-    public void MoveCheckerToCell(GameBoardCell selectedCell)
-    {
-        var position = selectedCell.transform.position;
-        PlacedChecker.transform.DOMove(new Vector3(position.x, anchor.transform.position.y, position.z), 0.5f);
     }
     
     public void TakeChecker(GameBoardCell selectedCell)
     {
         var position = selectedCell.transform.position;
-        PlacedChecker.transform.DOMove(new Vector3(position.x, anchor.transform.position.y, position.z), 0.5f);
+        DoTweenMovement(position);
         gameObject.SetActive(false);
     }
     
@@ -48,5 +46,10 @@ public class GameBoardCell : MonoBehaviour
     {
         var rend = prefab.GetComponent<Renderer>();
         rend.material.color = color;
+    }
+
+    private void DoTweenMovement(Vector3 position)
+    {
+        PlacedChecker.transform.DOMove(new Vector3(position.x, anchor.transform.position.y, position.z), 0.5f);
     }
 }

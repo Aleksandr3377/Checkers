@@ -1,11 +1,12 @@
 using System;
+using DG.Tweening;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     public PlayerControlBase[] players;
-    public bool allowanceForSelectingChecker = true;
     private PlayerControlBase _currentPlayer;
+    private GameBoardCell _previousSelectedCell;
 
     private void Start()
     {
@@ -13,32 +14,10 @@ public class GameManager : MonoBehaviour
         {
             player.Deactivate();
         }
-        ListenToMoveCheckerEvent();
+        
         SwitchPlayer();
     }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            SwitchPlayer();
-        }
-    }
-
-    public GameObject GetSelectedMouseObject(string tagOfObject)
-    {
-        GameObject selectedObject = null;
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit))
-        {
-            if (hit.collider.CompareTag(tagOfObject))
-            {
-                selectedObject = GetObjectTransform(hit.collider.gameObject);
-            }
-        }
-
-        return selectedObject;
-    }
+    
 
     private void SwitchPlayer()
     {
@@ -49,6 +28,7 @@ public class GameManager : MonoBehaviour
         else
         {
             _currentPlayer.CellWasSelected -= OnCellSelected;
+            //  _currentPlayer.CheckerWasMoved -= OnCellSelectedToMove;
             _currentPlayer.Deactivate();
             var currentIndex = Array.IndexOf(players, _currentPlayer);
             int nextPlayerIndex;
@@ -65,47 +45,47 @@ public class GameManager : MonoBehaviour
         }
 
         _currentPlayer.CellWasSelected += OnCellSelected;
+        //_currentPlayer.CheckerWasMoved += OnCellSelectedToMove;
         _currentPlayer.Activate();
     }
-    
-    private void OnCellSelected(GameBoardCell cell,GameColor color)
+
+    private void OnCellSelected(GameBoardCell cell, GameColor playerColor)
     {
         if (cell.HasRisenPlacedObject)
         {
             cell.MovePlacedObjectToGround();
+            _previousSelectedCell = null;
+            return;
         }
-        else
+        
+        // Якщо нова клітинка не пуста і має шашку іношого кольору 
+        if (!cell.IsEmpty && cell.PlacedChecker.GameColor != playerColor) return;
+        // Зробити щоб коли настиснув на нову клітинку яка має шашку , тоді попередню опустити і нову підняти і зберегти currentlySelected
+        if (!cell.IsEmpty)
         {
             cell.RisePlacedObject();
+            if (_previousSelectedCell!=null && _previousSelectedCell.HasRisenPlacedObject)
+            {
+                _previousSelectedCell.MovePlacedObjectToGround();
+            }
+
+            _previousSelectedCell = cell;
+            return;
+        }
+        // Якщо юзер вибрав клітинку с шашкой і нова клітинка не має шашки тоді зробити хід
+        if (_previousSelectedCell != null && _previousSelectedCell.HasRisenPlacedObject && cell.IsEmpty)
+        {
+           MoveCheckerToCell(_previousSelectedCell,cell);
+            _previousSelectedCell = null;
+            SwitchPlayer();
         }
     }
-    
 
-    private void ListenToMoveCheckerEvent()
+    private void MoveCheckerToCell(GameBoardCell initialCell,GameBoardCell destinationCell)
     {
-      //  players.MoveChecker += MoveCell;
+        var position = destinationCell.transform.position;
+       initialCell.PlacedChecker.transform.DOMove(new Vector3(position.x, destinationCell.anchor.transform.position.y, position.z), 0.5f)
+            .OnComplete(()=>initialCell.Place(destinationCell.PlacedChecker));
+        initialCell.PlacedChecker = null;
     }
-
-    private void MoveCell(GameBoardCell cell)
-    {
-        cell.MoveCheckerToCell(cell);
-    }
-    
-    private void ListenToBeatCheckerEvent()
-    {
-     //   players.MoveChecker += Beat;
-    }
-
-    private void Beat(GameBoardCell cell)
-    {
-        cell.TakeChecker(cell);
-    }
-
-
-    private GameObject GetObjectTransform(GameObject obj)
-    {
-        var selectObject = obj.transform.gameObject;
-        return selectObject;
-    }
-    
 }

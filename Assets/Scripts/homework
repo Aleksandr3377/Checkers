@@ -19,4 +19,11 @@
 7) в player control викликати field gamecolor і створити двух гравців
                  
  1)git і далі робити
- 2) GetSelectedMouseObject перенести в playerControl                
+ 2) GetSelectedMouseObject перенести в playerControl    
+ 
+ 1) Спавнити фішки на перенті   +
+ 2) Логіка для шашок щоб ходили тільки по діагоналі і тількі на сусідні
+ 3) шашка може перепригеути через ворожу
+ 4) Перенсти movement в gameManager і викликати destinationCell.Place в кінці анімації        
+ 5) Про ооп почитати
+ 6) Роберт Мартин Чистий код

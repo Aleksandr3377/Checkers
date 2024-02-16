@@ -3,7 +3,16 @@ using UnityEngine;
 public class RulesManager : MonoBehaviour
 {
    public GameManager gameManager;
+
+
+   private void CheckIfPlayerHasMovedChecker()
+   {
+      
+   }
    
+
+
+
    public bool CheckIfPlayerCanMoveChecker(GameObject checker,GameObject selectedCell)
    {
       var checkerPosition = checker.transform.position;
