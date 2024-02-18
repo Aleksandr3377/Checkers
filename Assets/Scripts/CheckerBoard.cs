@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class CheckerBoard : MonoBehaviour
 {
-    private GameBoardCell[,] _cells;
+    public GameBoardCell[,] _cells;
     public Checker checkerPrefab;
     public GameObject checkersParent;
     public GameBoardCell gameBoardCellPrefab;
-    private readonly int _rows = 8;
-    private readonly int _colums = 8;
+    public readonly int _rows = 8;
+    public readonly int _colums = 8;
     private readonly Color _gameBoardCellBlack = Color.black;
     private readonly Color _gameBoardCellWhite = Color.white;
 
@@ -32,6 +32,7 @@ public class CheckerBoard : MonoBehaviour
                 var cell = Instantiate(gameBoardCellPrefab, new Vector3(row, 0, colum), Quaternion.identity, transform);
                 gameBoardCellPrefab.ChangeColor(cell.gameObject, currentColor);
                 cell.gameObject.SetActive(true);
+                cell.Init(new Vector2Int(row,colum));
                 _cells[row, colum] = cell;
             }
         }

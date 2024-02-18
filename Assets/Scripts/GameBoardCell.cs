@@ -4,17 +4,29 @@ using UnityEngine;
 public class GameBoardCell : MonoBehaviour
 {
     public Transform anchor;
-    public Checker PlacedChecker { get; set; }
+    public Checker PlacedChecker { get; private set; }
     public bool HasRisenPlacedObject { get; private set; }
     public bool IsEmpty
     {
         get { return PlacedChecker == null; }
     }
+    public Vector2Int Position { get; private set; }
 
+    public void Init(Vector2Int position)
+    {
+        Position = position;
+    }
+    
     public void Place(Checker checker)
     {
         checker.transform.position = anchor.position + Vector3.up * checker.transform.lossyScale.y * 0.5f;
         PlacedChecker = checker;
+    }
+
+    public void ForgivePlacedChecker()
+    {
+        PlacedChecker = null;
+        HasRisenPlacedObject = false;
     }
 
     public void RisePlacedObject()

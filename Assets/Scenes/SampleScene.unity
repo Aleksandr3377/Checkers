@@ -155,6 +155,7 @@ MonoBehaviour:
   players:
   - {fileID: 1815212907}
   - {fileID: 1994837803}
+  checkerBoard: {fileID: 753552546}
 --- !u!4 &144754832
 Transform:
   m_ObjectHideFlags: 0

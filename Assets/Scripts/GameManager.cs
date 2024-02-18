@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public PlayerControlBase[] players;
     private PlayerControlBase _currentPlayer;
+    public CheckerBoard checkerBoard;
     private GameBoardCell _previousSelectedCell;
 
     private void Start()
@@ -49,43 +50,85 @@ public class GameManager : MonoBehaviour
         _currentPlayer.Activate();
     }
 
-    private void OnCellSelected(GameBoardCell cell, GameColor playerColor)
+    private void OnCellSelected(GameBoardCell selectedCell, GameColor playerColor)
     {
-        if (cell.HasRisenPlacedObject)
+        if (selectedCell.HasRisenPlacedObject)
         {
-            cell.MovePlacedObjectToGround();
+            selectedCell.MovePlacedObjectToGround();
             _previousSelectedCell = null;
             return;
         }
         
         // Якщо нова клітинка не пуста і має шашку іношого кольору 
-        if (!cell.IsEmpty && cell.PlacedChecker.GameColor != playerColor) return;
+        if (!selectedCell.IsEmpty && selectedCell.PlacedChecker.GameColor != playerColor) return;
         // Зробити щоб коли настиснув на нову клітинку яка має шашку , тоді попередню опустити і нову підняти і зберегти currentlySelected
-        if (!cell.IsEmpty)
+        if (!selectedCell.IsEmpty)
         {
-            cell.RisePlacedObject();
+            selectedCell.RisePlacedObject();
             if (_previousSelectedCell!=null && _previousSelectedCell.HasRisenPlacedObject)
             {
                 _previousSelectedCell.MovePlacedObjectToGround();
             }
 
-            _previousSelectedCell = cell;
+            _previousSelectedCell = selectedCell;
             return;
         }
         // Якщо юзер вибрав клітинку с шашкой і нова клітинка не має шашки тоді зробити хід
-        if (_previousSelectedCell != null && _previousSelectedCell.HasRisenPlacedObject && cell.IsEmpty)
+        if (_previousSelectedCell != null && _previousSelectedCell.HasRisenPlacedObject && selectedCell.IsEmpty)
         {
-           MoveCheckerToCell(_previousSelectedCell,cell);
-            _previousSelectedCell = null;
-            SwitchPlayer();
+            if ((Mathf.Abs(selectedCell.Position.x - _previousSelectedCell.Position.x) == 1) &&
+                (Mathf.Abs(selectedCell.Position.y - _previousSelectedCell.Position.y) == 1))
+            { 
+                MoveCheckerToCell(_previousSelectedCell,selectedCell);
+                _previousSelectedCell = null;
+                SwitchPlayer();
+            }
+        }
+
+        if (_previousSelectedCell != null && _previousSelectedCell.HasRisenPlacedObject && !selectedCell.IsEmpty)
+        {
+            if ((Mathf.Abs(selectedCell.Position.x - _previousSelectedCell.Position.x) == 1) &&
+                (Mathf.Abs(selectedCell.Position.y - _previousSelectedCell.Position.y) == 1))
+            {
+                MoveCheckerToCell(_previousSelectedCell,selectedCell);
+                selectedCell.PlacedChecker.gameObject.SetActive(false);
+                _previousSelectedCell = null;
+                SwitchPlayer();
+            }
         }
     }
 
     private void MoveCheckerToCell(GameBoardCell initialCell,GameBoardCell destinationCell)
     {
-        var position = destinationCell.transform.position;
-       initialCell.PlacedChecker.transform.DOMove(new Vector3(position.x, destinationCell.anchor.transform.position.y, position.z), 0.5f)
-            .OnComplete(()=>initialCell.Place(destinationCell.PlacedChecker));
-        initialCell.PlacedChecker = null;
+        if (initialCell == null || destinationCell == null) throw new ArgumentNullException();
+
+        var checkerTransform=initialCell.PlacedChecker.transform;
+        var endPosition = destinationCell.anchor.position + (0.5f * checkerTransform.lossyScale.y*Vector3.up);
+        initialCell.PlacedChecker.transform
+            .DOMove(endPosition, 0.5f)
+            .OnComplete(() =>
+            {
+                destinationCell.Place(initialCell.PlacedChecker);
+                initialCell.ForgivePlacedChecker();
+            });
+    }
+
+    private (int,int) FindLocationOfArray(GameBoardCell cell)
+    {
+        var cellRow=0;
+        var cellColumn = 0;
+        for (var row = 0; row < checkerBoard._rows; row++)
+        {
+            for (var column = 0; column < checkerBoard._colums; column++)
+            {
+                if (checkerBoard._cells[row, column] != cell) continue;
+                
+                cellRow = row;
+                cellColumn = column;
+                break;
+            }
+        }
+        
+        return (cellRow,cellColumn);
     }
 }
