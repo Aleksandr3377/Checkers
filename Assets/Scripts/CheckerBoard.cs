@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CheckerBoard : MonoBehaviour
 {
-    public GameBoardCell[,] _cells;
+    public GameBoardCell[,] Cells { get; private set; }
     public Checker checkerPrefab;
     public GameObject checkersParent;
     public GameBoardCell gameBoardCellPrefab;
@@ -23,7 +23,7 @@ public class CheckerBoard : MonoBehaviour
 
     private void InstantiateCheckBoard()
     {
-        _cells = new GameBoardCell[_rows, _colums];
+        Cells = new GameBoardCell[_rows, _colums];
         for (var row = 0; row < _rows; row++)
         {
             for (var colum = 0; colum < _colums; colum++)
@@ -33,18 +33,18 @@ public class CheckerBoard : MonoBehaviour
                 gameBoardCellPrefab.ChangeColor(cell.gameObject, currentColor);
                 cell.gameObject.SetActive(true);
                 cell.Init(new Vector2Int(row,colum));
-                _cells[row, colum] = cell;
+                Cells[row, colum] = cell;
             }
         }
     }
 
     private void InstantiateCheckers()
     {
-        for (var row = 0; row < _cells.GetLength(0); row++)
+        for (var row = 0; row < Cells.GetLength(0); row++)
         {
-            for (var colum = row % 2; colum < _cells.GetLength(1); colum += 2)
+            for (var colum = row % 2; colum < Cells.GetLength(1); colum += 2)
             {
-                var currentGameBoardCell = _cells[row, colum];
+                var currentGameBoardCell = Cells[row, colum];
                 if (row < 3)
                 {
                     SpawnAndInitColorForChecker(currentGameBoardCell, GameColor.White);

@@ -4,6 +4,8 @@ using UnityEngine;
 public abstract class PlayerControlBase:MonoBehaviour
 {
     public event Action<GameBoardCell, GameColor> CellWasSelected;
+    [SerializeField] private GameColor gameColor;
+    public GameColor GameColor => gameColor;
 
     protected void OnCellSelected(GameBoardCell cell,GameColor color)
     {

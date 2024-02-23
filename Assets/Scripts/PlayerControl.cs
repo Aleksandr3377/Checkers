@@ -5,7 +5,6 @@ public class PlayerControl : PlayerControlBase
     private Transform _selectedWhiteChecker;
     private Transform _selectedRedChecker;
     private Transform _selectedCell;
-    [SerializeField] private GameColor gameColor;
  
     private void Update()
     {
@@ -20,7 +19,7 @@ public class PlayerControl : PlayerControlBase
         var cell = GetCell();
         if (cell != null)
         {
-            OnCellSelected(cell.GetComponent<GameBoardCell>(), gameColor);
+            OnCellSelected(cell.GetComponent<GameBoardCell>(), GameColor);
         }
     }
 

@@ -23,7 +23,7 @@ public class GameBoardCell : MonoBehaviour
         PlacedChecker = checker;
     }
 
-    public void ForgivePlacedChecker()
+    public void ForgetPlacedChecker()
     {
         PlacedChecker = null;
         HasRisenPlacedObject = false;
