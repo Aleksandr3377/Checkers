@@ -2,14 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public PlayerControlBase[] players;
-    private PlayerControlBase _currentPlayer;
     public CheckerBoard checkerBoard;
+    public Action<int,GameColor> PlayerBeatEnemyChecker;
+    public Button buttonRestart;
+    public TextMeshProUGUI definedWinner;
     private GameBoardCell _previousSelectedCell;
+    private PlayerControlBase _currentPlayer;
+    private Action<GameColor> _playerHasWon;
+    private int _scoreOfRedPlayerBeatenCheckers;
+    private int _scoreOfWhitePlayerBeatenCheckers;
+    private bool _allowanceForMovingSelectedChecker=false;
+    private GameBoardCell _mustMoveThisChecker;
 
     private void Start()
     {
@@ -19,9 +30,10 @@ public class GameManager : MonoBehaviour
         }
 
         SwitchPlayer();
+        _playerHasWon += DefineWinnerByImpossibleMovement;
+        buttonRestart.onClick.AddListener(RestartGame);
     }
-
-
+    
     private void SwitchPlayer()
     {
         if (_currentPlayer == null)
@@ -74,24 +86,17 @@ public class GameManager : MonoBehaviour
 
         if (_previousSelectedCell != null && _previousSelectedCell.HasRisenPlacedObject && selectedCell.IsEmpty)
         {
-            GetDirectionOfMovementAndMoveChecker(playerColor, _previousSelectedCell, selectedCell);
+            if(_mustMoveThisChecker!=null&&_mustMoveThisChecker!=_previousSelectedCell) return; 
+            
+            MoveChecker(playerColor, _previousSelectedCell, selectedCell);
         }
     }
 
-    private void GetDirectionOfMovementAndMoveChecker(GameColor color, GameBoardCell previousSelectedCell,
+    private void MoveChecker(GameColor color, GameBoardCell previousSelectedCell,
         GameBoardCell selectedCell)
     {
-        switch (color)
-        {
-            case GameColor.White:
-                var directionForward = 1;
-                CheckBordersThenMove(directionForward, previousSelectedCell, selectedCell);
-                break;
-            case GameColor.Red:
-                var directionDown = -1; // коли використовує не працює коректно
-                CheckBordersThenMove(-1, previousSelectedCell, selectedCell);
-                break;
-        }
+        //todo: Split CheckBordersThenMove 2 methods
+        CheckBordersThenMove(color==GameColor.White?1:-1, previousSelectedCell, selectedCell);
     }
 
     private void CheckBordersThenMove(int direction, GameBoardCell previousSelectedCell, GameBoardCell selectedCell)
@@ -103,15 +108,21 @@ public class GameManager : MonoBehaviour
             MoveCheckerToCell(previousSelectedCell, selectedCell);
             _previousSelectedCell = null;
             SwitchPlayer();
-          //  CheckIfPlayerCanBeatEnemyChecker();
+          // CheckIfPlayerCanBeatEnemyChecker();         
         }
         else
         {
-            CheckIfCheckerCanBeatAndCompleteMove(previousSelectedCell, selectedCell);
+            TryToBeat(previousSelectedCell, selectedCell);
+        }
+
+        var allCellsAreOccupied = false;
+        if (allCellsAreOccupied)
+        {
+            _playerHasWon.Invoke(_currentPlayer.GameColor);
         }
     }
 
-    private void CheckIfCheckerCanBeatAndCompleteMove(GameBoardCell previousSelectedCell, GameBoardCell selectedCell)
+    private void TryToBeat(GameBoardCell previousSelectedCell, GameBoardCell selectedCell)
     {
         var prevPosition = previousSelectedCell.Position;
         var destPosition = selectedCell.Position;
@@ -123,12 +134,33 @@ public class GameManager : MonoBehaviour
         var jumpThroughCell = checkerBoard.Cells[jumpThroughCellPos.x, jumpThroughCellPos.y];
         var isJumpingOverEnemy =
             !jumpThroughCell.IsEmpty && jumpThroughCell.PlacedChecker.GameColor != _currentPlayer.GameColor;
-        if (isJumpingOverEnemy)
+        if (!isJumpingOverEnemy) return;
+        
+        MoveCheckerToCell(previousSelectedCell, selectedCell);
+        //todo: Refactor: remove duplication  dictionary
+        if (_currentPlayer.GameColor == GameColor.Red)
         {
-            MoveCheckerToCell(previousSelectedCell, selectedCell);
-            jumpThroughCell.PlacedChecker.gameObject.SetActive(false);
-            jumpThroughCell.ForgetPlacedChecker();
-            CheckIfUserCanBeatEnemy(selectedCell);
+            _scoreOfRedPlayerBeatenCheckers++;
+            PlayerBeatEnemyChecker?.Invoke(_scoreOfRedPlayerBeatenCheckers,_currentPlayer.GameColor);
+        }
+        else if(_currentPlayer.GameColor==GameColor.White)
+        {
+            _scoreOfWhitePlayerBeatenCheckers++;
+            PlayerBeatEnemyChecker?.Invoke(_scoreOfWhitePlayerBeatenCheckers,_currentPlayer.GameColor);
+        }
+        jumpThroughCell.PlacedChecker.gameObject.SetActive(false);
+        jumpThroughCell.ForgetPlacedChecker();
+        CheckIfUserCanBeatEnemy(selectedCell);
+    }
+    
+    private void CheckPossibilityOfMovement()
+    {
+        foreach (var cell in checkerBoard.Cells)
+        {
+            if (cell.PlacedChecker.GameColor == _currentPlayer.GameColor)
+            {
+                
+            }
             
         }
     }
@@ -162,12 +194,20 @@ public class GameManager : MonoBehaviour
             {
                 allPossibleEnemyCheckersAreEmpty = false;
                 break;
+                allPossibleEnemyCheckersAreEmpty = true;
             }
         }
         
         if (allPossibleEnemyCheckersAreEmpty)
         {
+            _mustMoveThisChecker = null;
             SwitchPlayer();
+        }
+
+        else
+        {
+            _previousSelectedCell = currentCell;
+            _mustMoveThisChecker = currentCell;
         }
     }
 
@@ -207,6 +247,43 @@ public class GameManager : MonoBehaviour
             });
     }
 
+    private void DefineWinnerByScore(int whiteScore,int redScore)
+    {
+        var allEnemyCheckersWereBeaten = 12;
+        if (whiteScore == allEnemyCheckersWereBeaten)
+        {
+            definedWinner.text = "Red player won";
+            ActivateButtonRestart();
+        }
+        else if(redScore==allEnemyCheckersWereBeaten)
+        {
+            definedWinner.text = "White player won";
+            ActivateButtonRestart();
+        }
+    }
+
+    private void DefineWinnerByImpossibleMovement(GameColor color)
+    {
+        if (_currentPlayer.GameColor == color)
+        {
+            definedWinner.text = "Red player has won";
+        }
+        else if (_currentPlayer.GameColor != color)
+        {
+            definedWinner.text = "White player has won";
+        }
+    }
+
+    private void ActivateButtonRestart()
+    {
+        buttonRestart.gameObject.SetActive(true);
+    }
+
+    private void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    
     private (int, int) FindLocationOfArray(GameBoardCell cell)
     {
         var cellRow = 0;
