@@ -9,7 +9,7 @@ public class Checker : MonoBehaviour
         { GameColor.White, Color.white },
         { GameColor.Red, Color.red }
     };
-
+    
     public void Init(GameColor gameColor)
     {
         GameColor = gameColor;

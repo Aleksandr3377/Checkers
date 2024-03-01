@@ -6,10 +6,7 @@ public class GameBoardCell : MonoBehaviour
     public Transform anchor;
     public Checker PlacedChecker { get; private set; }
     public bool HasRisenPlacedObject { get; private set; }
-    public bool IsEmpty
-    {
-        get { return PlacedChecker == null; }
-    }
+    public bool IsEmpty => PlacedChecker == null;
     public Vector2Int Position { get; private set; }
 
     public void Init(Vector2Int position)
