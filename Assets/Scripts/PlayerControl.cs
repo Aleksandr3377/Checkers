@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerControl : PlayerControlBase
+public sealed class PlayerControl : PlayerControlBase
 {
     private Transform _selectedWhiteChecker;
     private Transform _selectedRedChecker;
@@ -27,12 +27,11 @@ public class PlayerControl : PlayerControlBase
     {
         GameObject selectedObject = null;
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit))
+        if (!Physics.Raycast(ray, out var hit)) return selectedObject;
+        
+        if (hit.collider.CompareTag(tagOfObject))
         {
-            if (hit.collider.CompareTag(tagOfObject))
-            {
-                selectedObject =hit.collider.gameObject;
-            }
+            selectedObject =hit.collider.gameObject;
         }
 
         return selectedObject;

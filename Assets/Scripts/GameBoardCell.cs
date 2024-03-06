@@ -12,6 +12,7 @@ public class GameBoardCell : MonoBehaviour
     public void Init(Vector2Int position)
     {
         Position = position;
+        gameObject.name += $"X:{position.x},Y:{position.y}";
     }
     
     public void Place(Checker checker)

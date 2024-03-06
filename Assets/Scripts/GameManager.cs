@@ -17,11 +17,12 @@ public sealed class GameManager : MonoBehaviour
     public event Action<int, GameColor> PlayerBeatEnemyChecker;
     public Button buttonRestart;
     public TextMeshProUGUI definedWinner;
-    private GameBoardCell _previousSelectedCell;
     private PlayerControlBase _currentPlayer;
     private bool _playerLost;
     private GameBoardCell _mandatoryCell;
-
+    private GameBoardCell CurrentlySelectedCell=>checkerBoard.Cells.Cast<GameBoardCell>().
+        FirstOrDefault(x=>x.HasRisenPlacedObject&&x.PlacedChecker.GameColor==_currentPlayer.GameColor);
+    
     private void Start()
     {
         DeactivateAllPlayers();
@@ -57,7 +58,6 @@ public sealed class GameManager : MonoBehaviour
         if (IsCheckerCanBeMoved(playerDirection, previousSelectedCell, selectedCell))
         {
             MoveCheckerToCell(previousSelectedCell, selectedCell);
-            ResetPrevSelectedCell();
             SwitchPlayer();
         }
         else
@@ -75,9 +75,9 @@ public sealed class GameManager : MonoBehaviour
         MoveCheckerToCell(previousSelectedCell, selectedCell);
         DisableAndForgetChecker(cellBetweenSelectedAndPrev);
         AddScore();
-        if (CheckIfUserCanBeatEnemy(selectedCell))
+        if (CanUserBeatEnemyAgain(selectedCell)) // ! додав і почало працювати
         {
-            SetPrevAndMandatoryCellCurrentCell(selectedCell);
+            _mandatoryCell = selectedCell;
         }
         else
         {
@@ -110,40 +110,28 @@ public sealed class GameManager : MonoBehaviour
         {
             if (cell.IsEmpty || cell.PlacedChecker.GameColor != _currentPlayer.GameColor) continue;
 
-            CheckIfUserCanBeatEnemy(cell);
+            CanUserBeatEnemyAgain(cell);
         }
     }
 
-    private bool CheckIfUserCanBeatEnemy(GameBoardCell cell)
+    private bool CanUserBeatEnemyAgain(GameBoardCell cell)
     { 
         var availableCells = GetAvailableJumpDestinationCells(cell); 
-        return !IsPlayerCanBeat(availableCells, cell);
+        return availableCells.Any() && !AreNearestCellsEmpty(availableCells, cell);
+            // !
     }
     
-    private bool IsPlayerCanBeat(List<GameBoardCell> listOfCells, GameBoardCell currentCell)
-    {
-        var allPossibleEnemyCheckersAreEmpty = CheckIfNearestCellsAreEmpty(listOfCells, currentCell);
-        return allPossibleEnemyCheckersAreEmpty;
-    }
-
-    private bool CheckIfNearestCellsAreEmpty([NotNull] List<GameBoardCell> listOfCells, GameBoardCell currentCell)
+    private bool AreNearestCellsEmpty([NotNull] List<GameBoardCell> listOfCells, GameBoardCell currentCell)
     {
         if (listOfCells == null) throw new ArgumentNullException(nameof(listOfCells));
+        
         var allPossibleEnemyCheckersAreEmpty = listOfCells
-            .Select(cellWherePlayerCanMoveChecker =>
-                (cellWherePlayerCanMoveChecker.Position + currentCell.Position) / 2)
-            .Select(assumableEnemyCheckerPos =>
-                checkerBoard.Cells[assumableEnemyCheckerPos.x, assumableEnemyCheckerPos.y])
+            .Select(cell => (cell.Position + currentCell.Position) / 2)
+            .Select(cellPos => checkerBoard.Cells[cellPos.x, cellPos.y])
             .All(IsCellEmpty);
         return allPossibleEnemyCheckersAreEmpty;
     }
-
-    private void SetPrevAndMandatoryCellCurrentCell(GameBoardCell currentCell)
-    {
-        _previousSelectedCell = currentCell;
-        _mandatoryCell = currentCell;
-    }
-
+    
     private List<GameBoardCell> GetAvailableJumpDestinationCells(GameBoardCell cell)
     {
         const int distanceToSearch = 2;
@@ -204,7 +192,7 @@ public sealed class GameManager : MonoBehaviour
                 initialCell.ForgetPlacedChecker();
             });
     }
-
+    
     private static Vector3 GetEndPosition(GameBoardCell initialCell, GameBoardCell destinationCell)
     {
         var checkerTransform = initialCell.PlacedChecker.transform;
@@ -234,12 +222,7 @@ public sealed class GameManager : MonoBehaviour
         var playerDirection = color == GameColor.White ? 1 : -1;
         return playerDirection;
     }
-
-    private void ResetPrevSelectedCell()
-    {
-        _previousSelectedCell = null;
-    }
-
+    
     private bool IsCurrentPlayerNull()
     {
         return _currentPlayer == null;
@@ -287,7 +270,6 @@ public sealed class GameManager : MonoBehaviour
         if (IsSelectedCellHasRisenObject(selectedCell))
         {
             selectedCell.MovePlacedObjectToGround();
-            ResetPrevSelectedCell();
             return;
         }
 
@@ -297,7 +279,7 @@ public sealed class GameManager : MonoBehaviour
         {
             if (_mandatoryCell != null)
             {
-                RiseCheckerOrLower(_previousSelectedCell);
+                RiseCheckerOrLower(CurrentlySelectedCell);
             }
             else
             {
@@ -311,15 +293,14 @@ public sealed class GameManager : MonoBehaviour
 
         if (CheckIfMandatoryCheckerNotEqualsPrevCheckerAndIsNotNull()) return;
 
-        MakeMove(playerColor, _previousSelectedCell, selectedCell);
+        MakeMove(playerColor, CurrentlySelectedCell, selectedCell);
     }
 
-    private void RiseCheckerOrLower(GameBoardCell selectedCell)
-    {
-        selectedCell.RisePlacedObject();
-        if (IsPrevCellRisen()) _previousSelectedCell.MovePlacedObjectToGround();
+    private void RiseCheckerOrLower(GameBoardCell cell)
+    {      
+        if (IsPrevCellRisen()) CurrentlySelectedCell.MovePlacedObjectToGround();
 
-        _previousSelectedCell = selectedCell;
+        cell.RisePlacedObject();
     }
 
     private void SetInitialPlayer() => _currentPlayer = players[0];
@@ -364,16 +345,16 @@ public sealed class GameManager : MonoBehaviour
 
     private bool IsIndexWithinBounds(int currentIndex) => currentIndex == players.Length - 1;
 
-    private bool IsPrevCellRisen() => _previousSelectedCell != null && IsSelectedCellHasRisenObject(_previousSelectedCell);
+    private bool IsPrevCellRisen() => CurrentlySelectedCell != null && CurrentlySelectedCell.HasRisenPlacedObject;
 
     private bool IsCheckerCanBeMovedToNeighbourCell(GameBoardCell selectedCell)
     {
-        return _previousSelectedCell != null && _previousSelectedCell.HasRisenPlacedObject && selectedCell.IsEmpty;
+        return CurrentlySelectedCell != null && CurrentlySelectedCell.HasRisenPlacedObject && selectedCell.IsEmpty;
     }
 
     private bool CheckIfMandatoryCheckerNotEqualsPrevCheckerAndIsNotNull()
     {
-        return _mandatoryCell != null && _mandatoryCell != _previousSelectedCell;
+        return _mandatoryCell != null && _mandatoryCell != CurrentlySelectedCell;
     }
 
     private int GetCurrentPlayerIndex()
@@ -394,7 +375,7 @@ public sealed class GameManager : MonoBehaviour
         return checkerBoard.Cells[jumpThroughCellPos.x, jumpThroughCellPos.y];
     }
 
-    private bool IsCellEmpty(GameBoardCell cellBetweenSelectedAndPrev)
+    private static bool IsCellEmpty(GameBoardCell cellBetweenSelectedAndPrev)
     {
         return cellBetweenSelectedAndPrev.IsEmpty;
     }
