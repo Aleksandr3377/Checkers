@@ -20,6 +20,7 @@ public sealed class GameManager : MonoBehaviour
     private PlayerControlBase _currentPlayer;
     private bool _playerLost;
     private GameBoardCell _mandatoryCell;
+    private MoveData _moveData;
     private GameBoardCell CurrentlySelectedCell=>checkerBoard.Cells.Cast<GameBoardCell>().
         FirstOrDefault(x=>x.HasRisenPlacedObject&&x.PlacedChecker.GameColor==_currentPlayer.GameColor);
     
@@ -51,33 +52,34 @@ public sealed class GameManager : MonoBehaviour
         ActivateCurrentPlayer();
     }
 
-    private void MakeMove(GameColor color, GameBoardCell previousSelectedCell,
-        GameBoardCell selectedCell)
+    private void MakeMove(MoveData moveData)
     {
-        var playerDirection = GetPlayerDirection(color);
-        if (IsCheckerCanBeMoved(playerDirection, previousSelectedCell, selectedCell))
+        var playerDirection = GetPlayerDirection(_currentPlayer.GameColor);
+        var startCell = moveData.StartCell;
+        var destCell =  moveData.DestCell;
+        if (IsCheckerCanBeMoved(playerDirection, startCell, destCell))
         {
-            MoveCheckerToCell(previousSelectedCell, selectedCell);
+            MoveCheckerToCell(startCell, destCell);
             SwitchPlayer();
         }
         else
         {
-            TryToBeatEnemyChecker(previousSelectedCell, selectedCell);
+            TryToBeatEnemyChecker(moveData);
         }
     }
-
-    private void TryToBeatEnemyChecker(GameBoardCell previousSelectedCell, GameBoardCell selectedCell)
+    
+    private void TryToBeatEnemyChecker(MoveData moveData)
     {
-        if (!IsCheckerCanBeatEnemy(previousSelectedCell, selectedCell)) return;
+        if (!IsCheckerCanBeatEnemy(moveData.StartCell, moveData.DestCell)) return;
 
         var cellBetweenSelectedAndPrev =
-            GetCellBetween(previousSelectedCell.Position, selectedCell.Position);
-        MoveCheckerToCell(previousSelectedCell, selectedCell);
+            GetCellBetween(moveData.StartCell.Position, moveData.DestCell.Position);
+        MoveCheckerToCell(moveData.StartCell, moveData.DestCell);
         DisableAndForgetChecker(cellBetweenSelectedAndPrev);
         AddScore();
-        if (CanUserBeatEnemyAgain(selectedCell)) // ! додав і почало працювати
+        if (CanUserBeatEnemyAgain(moveData.DestCell)) 
         {
-            _mandatoryCell = selectedCell;
+            _mandatoryCell = moveData.DestCell;
         }
         else
         {
@@ -265,7 +267,7 @@ public sealed class GameManager : MonoBehaviour
         cellBetweenSelectedAndPrev.ForgetPlacedChecker();
     }
 
-    private void TryToMove(GameBoardCell selectedCell, GameColor playerColor)
+    private void TryToMove(GameBoardCell selectedCell, GameColor playerColor) //todo:refactor
     {
         if (IsSelectedCellHasRisenObject(selectedCell))
         {
@@ -292,13 +294,17 @@ public sealed class GameManager : MonoBehaviour
         if (!IsCheckerCanBeMovedToNeighbourCell(selectedCell)) return;
 
         if (CheckIfMandatoryCheckerNotEqualsPrevCheckerAndIsNotNull()) return;
-
-        MakeMove(playerColor, CurrentlySelectedCell, selectedCell);
+        _moveData.StartCell = CurrentlySelectedCell;
+        _moveData.DestCell = selectedCell;
+        MakeMove(_moveData);
     }
 
     private void RiseCheckerOrLower(GameBoardCell cell)
     {      
-        if (IsPrevCellRisen()) CurrentlySelectedCell.MovePlacedObjectToGround();
+        if (IsPrevCellRisen())
+        {
+            CurrentlySelectedCell.MovePlacedObjectToGround();
+        }
 
         cell.RisePlacedObject();
     }
@@ -315,6 +321,7 @@ public sealed class GameManager : MonoBehaviour
     {
         _currentPlayer.CellWasSelected += TryToMove;
         _currentPlayer.Activate();
+        _moveData = new MoveData();
     }
 
     private void SetNextPlayer()
