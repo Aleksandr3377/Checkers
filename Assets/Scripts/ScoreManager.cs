@@ -1,52 +1,52 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ScoreManager : MonoBehaviour
 {
-    public GameManager gameManager;
-    public TextMeshProUGUI firstPlayerScore;
-    public TextMeshProUGUI secondPlayerScore;
-    private readonly Dictionary<GameColor, TextMeshProUGUI> _playerScoreTexts = new();
-    public Action<GameColor> PlayerHasWon;
-    
-   private void Start()
-   {
-       InitTextDictionaryValues();
-       gameManager.PlayerBeatEnemyChecker += CountScore;
-   }
+    [SerializeField] private GameManager _gameManager;
+    [SerializeField] private List<GameColorToScoreView> _scoreViews;
 
-   private void Update()
-   {
-       CheckIfPlayerHasBeatenAllCheckers();
-   }
-
-   private void CountScore(int number,GameColor playerColor)
+    private void Awake()
     {
-        if (_playerScoreTexts.TryGetValue(playerColor, out var playerScoreText))
+        ActivateCountScoresImages();
+    }
+
+    private void ActivateCountScoresImages()
+    {
+        foreach (var view in _scoreViews)
         {
-            playerScoreText.text = $"Score of {playerColor.ToString().ToLower()} player: {number}";
+            view.PlayerColorImage.gameObject.SetActive(true);
         }
     }
-    
-    private void InitTextDictionaryValues()
+
+    private void DisplayScore(int number, GameColor playerColor)
     {
-        _playerScoreTexts.Add(GameColor.Red, firstPlayerScore);
-        _playerScoreTexts.Add(GameColor.White, secondPlayerScore);
+        var findPlayerScore = _scoreViews.FirstOrDefault(view => view.GameColor == playerColor);
+        findPlayerScore.View.text = $"{number}";
     }
     
     public readonly Dictionary<GameColor, int> PlayerScores = new()
     {
-        { GameColor.White, 0},
-        { GameColor.Red, 0}
+        { GameColor.White, 0 },
+        { GameColor.Red, 0 }
     };
-
-    private void CheckIfPlayerHasBeatenAllCheckers()
+    
+    public void AddScore(GameColor playerColor, int score)
     {
-        if (PlayerScores[GameColor.White] == 12 || PlayerScores[GameColor.Red] == 12)
-        {
-            PlayerHasWon?.Invoke(PlayerScores[GameColor.White] == 12 ? GameColor.White : GameColor.Red);
-        }
+        var newScore = PlayerScores[playerColor] + score;
+        PlayerScores[playerColor] = newScore;
+        DisplayScore(newScore, playerColor);
     }
+}
+
+[Serializable]
+public struct GameColorToScoreView
+{
+    public GameColor GameColor;
+    public TextMeshProUGUI View; 
+    public Image PlayerColorImage;
 }

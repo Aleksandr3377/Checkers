@@ -39,3 +39,15 @@
  переробити програму moveData 
  try to move рефактор
  value and ref type прочитати
+ 
+ memory heap vs stack  ще раз
+Мартин Фаулер рефакторинг 1 версія
+value and ref types
+
+
+
+Зробити щоб показувало гравця який ходе(колір + фото) +
+score змінити фото + рахунок
+прочитати про boxing unboxing
+memory hp video
+
