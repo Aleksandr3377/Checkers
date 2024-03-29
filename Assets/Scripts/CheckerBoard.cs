@@ -15,11 +15,11 @@ public class CheckerBoard : MonoBehaviour
 
     private void Awake()
     {
-        InstantiateCheckBoard(true);
+        InstantiateCheckBoard();
         InstantiateCheckers();
     }
     
-    public void InstantiateCheckBoard(bool status)//todo:??
+    public void InstantiateCheckBoard()//todo:??
     {
         Cells = new GameBoardCell[_rows, _colums];
         for (var row = 0; row < _rows; row++)
@@ -29,7 +29,7 @@ public class CheckerBoard : MonoBehaviour
                 var currentColor = (row + colum) % 2 == 0 ? _gameBoardCellBlack : _gameBoardCellWhite;
                 var cell = Instantiate(gameBoardCellPrefab, new Vector3(row, 0, colum), Quaternion.identity, transform);
                 gameBoardCellPrefab.ChangeColor(cell.gameObject, currentColor);
-                cell.gameObject.SetActive(status);
+                cell.gameObject.SetActive(true);
                 cell.Init(new Vector2Int(row,colum));
                 Cells[row, colum] = cell;
             }

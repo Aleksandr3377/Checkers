@@ -17,12 +17,11 @@ public class GameBoardHelper : MonoBehaviour
 
     public List<GameBoardCell> GetAvailableJumpDestinationCells(GameBoardCell cell)
     {
-        const int distanceToSearch = 2;
-        var potentialPositions = GetPotentialPositions(cell, distanceToSearch);
+        var potentialPositions = GetPotentialPositions(cell, 2);
         var boardCells = GetBoardCells(potentialPositions);
         return boardCells.Where(x => x.IsEmpty).ToList();
     }
-
+    
     public Vector2Int[] GetPotentialPositions(GameBoardCell cell, int distance)
     {
         var potentialPositions = new[]
@@ -34,6 +33,37 @@ public class GameBoardHelper : MonoBehaviour
         };
         return potentialPositions;
     }
+    
+    public List<GameBoardCell> GetAvailableCells(GameBoardCell cell,GameColor color)
+    {
+        var potentialPositions = GetPotentialPositionsToMove(cell,color);
+        var boardCells = GetBoardCells(potentialPositions);
+        return boardCells.Where(x => x.IsEmpty).ToList();
+    }
+
+    private Vector2Int[] GetPotentialPositionsToMove(GameBoardCell cell, GameColor color)
+    {
+        if (color==GameColor.White)
+        {
+            var potentialPositions = new[]
+            {
+                cell.Position + new Vector2Int(1, 1),
+                cell.Position + new Vector2Int(1, -1),
+            };
+            return potentialPositions;
+        }
+        else
+        {
+            var potentialPositions = new[]
+            {
+                cell.Position + new Vector2Int(1, 1),
+                cell.Position + new Vector2Int(1, -1),
+            };
+            return potentialPositions;
+        }
+      
+    }
+
 
     public IEnumerable<GameBoardCell> GetBoardCells([NotNull] Vector2Int[] positions)
     {

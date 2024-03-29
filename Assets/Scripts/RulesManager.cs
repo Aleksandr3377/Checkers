@@ -107,10 +107,25 @@ public class RulesManager : MonoBehaviour
         return selectedCell.Position.x - previousSelectedCell.Position.x == direction &&
                Mathf.Abs(selectedCell.Position.y - previousSelectedCell.Position.y) == 1;
     }
-
+    
     public bool IsCheckerCanBeMovedToNeighbourCell(GameBoardCell selectedCell)
     {
         return _gameManager.CurrentlySelectedCell != null && _gameManager.CurrentlySelectedCell.HasRisenPlacedObject &&
                selectedCell.IsEmpty;
     }
+    
+    // private void CheckIfPlayerCanBeatEnemyChecker()
+    // {
+    //     foreach (var cell in checkerBoard.Cells)
+    //     {
+    //         if (cell.IsEmpty || cell.PlacedChecker.GameColor != _currentPlayer.GameColor) continue;
+    //
+    //         CanUserBeatEnemyAgain(cell);
+    //         if (CanUserBeatEnemyAgain(cell))
+    //         {
+    //             _mustUseSpecificCheckerCellToMove = cell;
+    //             // _mustUseSpecificCheckerCellToMove = _moveData.StartCell;
+    //         }
+    //     }
+    // }
 }

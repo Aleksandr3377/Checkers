@@ -123,17 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!114 &59520261 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9072944782100980227, guid: 41b1f80d35fb6cd4a85c8a8451599ce1, type: 3}
-  m_PrefabInstance: {fileID: 73236177}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &70098805 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3270422482606986160, guid: 41b1f80d35fb6cd4a85c8a8451599ce1, type: 3}
@@ -282,7 +271,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 173978735661310358, guid: 41b1f80d35fb6cd4a85c8a8451599ce1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 540456481}
   m_SourcePrefab: {fileID: 100100000, guid: 41b1f80d35fb6cd4a85c8a8451599ce1, type: 3}
 --- !u!1 &144754830
 GameObject:
@@ -529,6 +521,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &540456479 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 173978735661310358, guid: 41b1f80d35fb6cd4a85c8a8451599ce1, type: 3}
+  m_PrefabInstance: {fileID: 73236177}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &540456481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 540456479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf48984f348341ea8c88a0f4d3243956, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  View: {fileID: 1940182596}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -672,17 +682,6 @@ Transform:
   - {fileID: 1857574725}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &757656378 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9072944782100980227, guid: 41b1f80d35fb6cd4a85c8a8451599ce1, type: 3}
-  m_PrefabInstance: {fileID: 8114247031266002681}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &902848988
 GameObject:
   m_ObjectHideFlags: 0
@@ -1390,11 +1389,9 @@ MonoBehaviour:
   _gameManager: {fileID: 144754831}
   _scoreViews:
   - GameColor: 1
-    View: {fileID: 1940182596}
-    PlayerColorImage: {fileID: 59520261}
+    ScoreView: {fileID: 540456481}
   - GameColor: 0
-    View: {fileID: 362998793}
-    PlayerColorImage: {fileID: 757656378}
+    ScoreView: {fileID: 1937655531}
 --- !u!1 &1898102973
 GameObject:
   m_ObjectHideFlags: 0
@@ -1443,6 +1440,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1937655529 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 173978735661310358, guid: 41b1f80d35fb6cd4a85c8a8451599ce1, type: 3}
+  m_PrefabInstance: {fileID: 8114247031266002681}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1937655531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1937655529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf48984f348341ea8c88a0f4d3243956, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  View: {fileID: 362998793}
 --- !u!114 &1940182596 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7828879348128322489, guid: 41b1f80d35fb6cd4a85c8a8451599ce1, type: 3}
@@ -1665,7 +1680,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 173978735661310358, guid: 41b1f80d35fb6cd4a85c8a8451599ce1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1937655531}
   m_SourcePrefab: {fileID: 100100000, guid: 41b1f80d35fb6cd4a85c8a8451599ce1, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

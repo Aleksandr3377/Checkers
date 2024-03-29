@@ -19,6 +19,9 @@ public class GameManager : MonoBehaviour
     private MoveData _moveData;
     public GameBoardCell CurrentlySelectedCell => _checkerBoard.Cells.Cast<GameBoardCell>()
         .FirstOrDefault(x => x.HasRisenPlacedObject && x.PlacedChecker.GameColor == CurrentPlayer.GameColor);
+    
+    // [SerializeField] private BotControlBase[] _bots;
+    // [SerializeField] private BotControlBase _bot;
 
     private void Start()
     {
@@ -92,7 +95,7 @@ public class GameManager : MonoBehaviour
 
     public void SwitchOffPlayerGame()
     {
-        _checkerBoard.InstantiateCheckBoard(false); //todo:?
+    //    _checkerBoard.InstantiateCheckBoard(false); //todo:?
     }
 
     private static void RestartGame()
@@ -168,7 +171,7 @@ public class GameManager : MonoBehaviour
         CurrentPlayer = _players[nextPlayerIndex];
     }
 
-    private void DeactivateAllPlayers()
+    public void DeactivateAllPlayers()
     {
         foreach (var player in _players)
         {
