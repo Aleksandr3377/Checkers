@@ -11,18 +11,16 @@ public class RulesManager : MonoBehaviour
     public bool CanUserBeatEnemy(GameBoardCell currentCell, GameBoardCell selectedCell)
     {
         if (!CanJump(currentCell.Position, selectedCell.Position)) return false;
-
+        
         var beatPosition =
             _gameBoardHelper.GetCellBetween(currentCell.Position, selectedCell.Position);
         return !beatPosition.IsEmpty && beatPosition.PlacedChecker.GameColor !=
             _gameManager.CurrentPlayer.GameColor;
     }
 
-    public bool CanUserBeatEnemyAgain(GameBoardCell cell)
+    public bool CanUserBeatEnemy(GameBoardCell cell)
     {
         var availableCells = _gameBoardHelper.GetAvailableJumpDestinationCells(cell);
-        if (!availableCells.Any()) return false;
-
         return availableCells.Any(cellToJump => CanUserBeatEnemy(cell, cellToJump));
     }
 
@@ -47,18 +45,7 @@ public class RulesManager : MonoBehaviour
         return pos.x >= 0 && pos.x < _checkerBoard.Cells.GetLength(0) &&
                pos.y >= 0 && pos.y < _checkerBoard.Cells.GetLength(1);
     }
-
-    //private bool AreNearestCellsEmpty([NotNull] List<GameBoardCell> listOfCells, GameBoardCell currentCell)
-    // {
-    //     if (listOfCells == null) throw new ArgumentNullException(nameof(listOfCells));
-    //
-    //     var allPossibleEnemyCheckersAreEmpty = listOfCells
-    //         .Select(cell => (cell.Position + currentCell.Position) / 2)
-    //         .Select(cellPos => _checkerBoard.Cells[cellPos.x, cellPos.y])
-    //         .All(x => x.IsEmpty);
-    //     return allPossibleEnemyCheckersAreEmpty;
-    // }
-
+    
     public void CheckPossibilityOfMovements()
     {
         const int radius = 1;

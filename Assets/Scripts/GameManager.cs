@@ -14,17 +14,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] private ScoreManager _scoreManager;
     [SerializeField] private CheckerBoard _checkerBoard;
     [SerializeField] private Button _buttonRestart; 
-    [SerializeField] public TextMeshProUGUI DefinedWinner; 
+    [SerializeField] public TextMeshProUGUI DefinedWinner;
+    [SerializeField] private float _timeScale = 1; 
     public PlayerControlBase CurrentPlayer { get; private set; }
     private MoveData _moveData;
     public GameBoardCell CurrentlySelectedCell => _checkerBoard.Cells.Cast<GameBoardCell>()
         .FirstOrDefault(x => x.HasRisenPlacedObject && x.PlacedChecker.GameColor == CurrentPlayer.GameColor);
     
-    // [SerializeField] private BotControlBase[] _bots;
-    // [SerializeField] private BotControlBase _bot;
-
     private void Start()
     {
+        Time.timeScale = _timeScale;
         DeactivateAllPlayers();
         SwitchPlayer();
         _buttonRestart.gameObject.SetActive(false);
@@ -53,37 +52,50 @@ public class GameManager : MonoBehaviour
         var destCell = moveData.DestCell;
         if (_rulesManager.IsCheckerCanBeMoved(playerDirection, startCell, destCell))
         {
-            _movementManager.MoveCheckerToCell(startCell, destCell);
-            SwitchPlayer();
+            _movementManager.MoveCheckerToCell(startCell, destCell,()=>
+            {
+                SwitchPlayer();
+                _rulesManager.CheckIfPlayerHasBeatenAllCheckers();
+            });
             //CheckIfPlayerCanBeatEnemyChecker();
         }
         else
         {
             TryToBeatEnemyChecker(moveData);
+            _rulesManager.CheckIfPlayerHasBeatenAllCheckers();
         }
-        _rulesManager.CheckIfPlayerHasBeatenAllCheckers();
     }
 
     private void TryToBeatEnemyChecker(MoveData moveData)
     {
         if (!_rulesManager.CanUserBeatEnemy(moveData.StartCell, moveData.DestCell)) return;
         
-        _movementManager.MoveCheckerToCell(moveData.StartCell, moveData.DestCell);
+        _movementManager.MoveCheckerToCell(moveData.StartCell, moveData.DestCell, OnMoveFinished);
         var enemyPosition =
             _gameBoardHelper.GetCellBetween(moveData.StartCell.Position, moveData.DestCell.Position);
         RemoveChecker(enemyPosition);
         _scoreManager.AddScore(CurrentPlayer.GameColor,1);
-        if (_rulesManager.CanUserBeatEnemyAgain(moveData.DestCell))
+        var continueMove = _rulesManager.CanUserBeatEnemy(moveData.DestCell);
+        if (continueMove)
         {
             moveData.StartCellLocked = false;
             moveData.StartCell = moveData.DestCell;
             moveData.StartCellLocked = true;
         }
-        else
+        
+        void OnMoveFinished()
         {
-            moveData.StartCellLocked = false;
-            SwitchPlayer();
-            //CheckIfPlayerCanBeatEnemyChecker();
+            if (_rulesManager.CanUserBeatEnemy(moveData.DestCell))
+            {
+                CurrentPlayer.SelectCell(moveData.StartCell);
+            }
+            else
+            {
+                moveData.StartCellLocked = false;
+                SwitchPlayer();
+                //CheckIfPlayerCanBeatEnemyChecker();
+            }
+            
         }
     }
     
@@ -122,6 +134,7 @@ public class GameManager : MonoBehaviour
         }
 
         if (!cell.IsEmpty && cell.PlacedChecker.GameColor != CurrentPlayer.GameColor) return;
+        
         if (!cell.IsEmpty)
         {
             if (_moveData.StartCell != null)
@@ -155,14 +168,14 @@ public class GameManager : MonoBehaviour
     private void DeactivateCurrentPlayer()
     {
         CurrentPlayer.CellWasSelected -= TryToMove;
-        CurrentPlayer.Deactivate();
+      //  CurrentPlayer.Deactivate();
     }
 
     private void ActivateCurrentPlayer()
     {
-        CurrentPlayer.CellWasSelected += TryToMove;
-        CurrentPlayer.Activate();
         _moveData = new MoveData();
+        CurrentPlayer.CellWasSelected += TryToMove;
+        CurrentPlayer.SelectCell();
     }
 
     private void SetNextPlayer()
@@ -171,7 +184,7 @@ public class GameManager : MonoBehaviour
         CurrentPlayer = _players[nextPlayerIndex];
     }
 
-    public void DeactivateAllPlayers()
+    private void DeactivateAllPlayers()
     {
         foreach (var player in _players)
         {

@@ -6,18 +6,21 @@ public abstract class PlayerControlBase:MonoBehaviour
     public event Action<GameBoardCell, GameColor> CellWasSelected; 
     [SerializeField] private GameColor _gameColor;
     public GameColor GameColor => _gameColor;
+    protected GameBoardCell StartCell;
 
     protected void OnCellSelected(GameBoardCell cell, GameColor color)
     {
+       // Deactivate();
         CellWasSelected?.Invoke(cell,color);
     }
     
-    public virtual void Activate()
+    public virtual void SelectCell(GameBoardCell startCell = null)
     {
+        StartCell = startCell;
         gameObject.SetActive(true);
     }
     
-    public virtual void Deactivate()
+    public void Deactivate()
     {
         gameObject.SetActive(false);
     }
