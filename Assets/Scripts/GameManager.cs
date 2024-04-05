@@ -16,11 +16,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button _buttonRestart; 
     [SerializeField] public TextMeshProUGUI DefinedWinner;
     [SerializeField] private float _timeScale = 1; 
+    [SerializeField] private GameObject _playerPrefab; 
+    [SerializeField] private GameObject _botPrefab; 
     public PlayerControlBase CurrentPlayer { get; private set; }
     private MoveData _moveData;
     public GameBoardCell CurrentlySelectedCell => _checkerBoard.Cells.Cast<GameBoardCell>()
         .FirstOrDefault(x => x.HasRisenPlacedObject && x.PlacedChecker.GameColor == CurrentPlayer.GameColor);
-    
+
+    private void Awake()
+    {
+        SelectPlayers();
+    }
+
     private void Start()
     {
         Time.timeScale = _timeScale;
@@ -29,6 +36,62 @@ public class GameManager : MonoBehaviour
         _buttonRestart.gameObject.SetActive(false);
     }
 
+    private void SelectPlayers()
+    {
+        _players = new PlayerControlBase[2];
+        switch (MenuManager.Players)
+        {
+            case 2:
+            {
+                InstantiatePlayers(_playerPrefab, _playerPrefab);
+                break;
+            }
+            case 1:
+            {
+                InstantiatePlayers(_playerPrefab, _botPrefab);
+                break;
+            }
+            case 0:
+            {
+                InstantiatePlayers(_botPrefab, _botPrefab);
+                break;
+            }
+        }
+    }
+
+    private void InstantiatePlayers(GameObject firstPlayerPrefab, GameObject secondPlayerPrefab)
+    {
+        if (firstPlayerPrefab == _playerPrefab&& secondPlayerPrefab ==_playerPrefab)
+        {
+            var firstPlayer = Instantiate(firstPlayerPrefab).GetComponent<PlayerControl>();
+            firstPlayer.GameColor = GameColor.White;
+            _players[0] = firstPlayer;
+            var secondPlayer = Instantiate(secondPlayerPrefab).GetComponent<PlayerControl>();
+            secondPlayer.GameColor = GameColor.Red;
+            _players[1] = secondPlayer;
+        }
+        
+        if (firstPlayerPrefab == _playerPrefab&& secondPlayerPrefab ==_botPrefab)
+        {
+            var firstPlayer = Instantiate(firstPlayerPrefab).GetComponent<PlayerControl>();
+            firstPlayer.GameColor = GameColor.White;
+            _players[0] = firstPlayer;
+            var secondPlayer = Instantiate(secondPlayerPrefab).GetComponent<BotControl>();
+            secondPlayer.GameColor = GameColor.Red;
+            _players[1] = secondPlayer;
+        }
+        
+        if (firstPlayerPrefab == _botPrefab&& secondPlayerPrefab ==_botPrefab)
+        {
+            var firstPlayer = Instantiate(firstPlayerPrefab).GetComponent<BotControl>();
+            firstPlayer.GameColor = GameColor.White;
+            _players[0] = firstPlayer;
+            var secondPlayer = Instantiate(secondPlayerPrefab).GetComponent<BotControl>();
+            secondPlayer.GameColor = GameColor.Red;
+            _players[1] = secondPlayer;
+        }
+    }
+    
     private void SwitchPlayer()
     {
         if (CurrentPlayer == null)
