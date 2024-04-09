@@ -100,7 +100,7 @@ public class RulesManager : MonoBehaviour
                selectedCell.IsEmpty;
     }
     
-    public void CanBeatEnemyChecker()
+    public void IsPlayerMustBeatEnemyChecker()
     {
         foreach (var cell in _checkerBoard.Cells)
         {
