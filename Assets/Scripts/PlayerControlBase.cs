@@ -4,11 +4,12 @@ using UnityEngine;
 public abstract class PlayerControlBase:MonoBehaviour
 {
     public event Action<GameBoardCell, GameColor> CellWasSelected; 
+    public abstract PlayerType PlayerType { get;}
     [SerializeField] private GameColor _gameColor;
     public GameColor GameColor
-    {
+    { 
         get => _gameColor;
-        set => _gameColor = value;
+       protected set => _gameColor = value;
     }
 
     protected GameBoardCell StartCell;

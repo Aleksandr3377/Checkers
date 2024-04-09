@@ -7,6 +7,7 @@ public class RulesManager : MonoBehaviour
     [SerializeField] private GameBoardHelper _gameBoardHelper;
     [SerializeField] private CheckerBoard _checkerBoard;
     [SerializeField] private ScoreManager _scoreManager;
+    private MoveData _moveData;
 
     public bool CanUserBeatEnemy(GameBoardCell currentCell, GameBoardCell selectedCell)
     {
@@ -73,7 +74,6 @@ public class RulesManager : MonoBehaviour
         else if (_gameManager.CurrentPlayer.GameColor != color)
             _gameManager.DefinedWinner.text = "White player has won";
         _gameManager.ActivateButtonRestart();
-       _gameManager.SwitchOffPlayerGame();
     }
 
     private void OnPlayerHasWon(GameColor gameColor)
@@ -85,7 +85,6 @@ public class RulesManager : MonoBehaviour
             _ => ""
         };
         _gameManager.ActivateButtonRestart();
-        _gameManager.SwitchOffPlayerGame();
     }
 
     public bool IsCheckerCanBeMoved(int direction, GameBoardCell previousSelectedCell,
@@ -101,18 +100,22 @@ public class RulesManager : MonoBehaviour
                selectedCell.IsEmpty;
     }
     
-    // private void CheckIfPlayerCanBeatEnemyChecker()
-    // {
-    //     foreach (var cell in checkerBoard.Cells)
-    //     {
-    //         if (cell.IsEmpty || cell.PlacedChecker.GameColor != _currentPlayer.GameColor) continue;
-    //
-    //         CanUserBeatEnemyAgain(cell);
-    //         if (CanUserBeatEnemyAgain(cell))
-    //         {
-    //             _mustUseSpecificCheckerCellToMove = cell;
-    //             // _mustUseSpecificCheckerCellToMove = _moveData.StartCell;
-    //         }
-    //     }
-    // }
+    public void CanBeatEnemyChecker()
+    {
+        foreach (var cell in _checkerBoard.Cells)
+        {
+            if (cell.IsEmpty || cell.PlacedChecker.GameColor != _gameManager.CurrentPlayer.GameColor) continue;
+            
+            if (CanUserBeatEnemy(cell))
+            {
+                _moveData.StartCellLocked = false;
+                _moveData.StartCell = cell;
+                _moveData.StartCellLocked = true;
+            }
+            else
+            {
+                _moveData.StartCellLocked = false;
+            }
+        }
+    }
 }

@@ -73,6 +73,7 @@ public class GameBoardHelper : MonoBehaviour
             .Where(pos => _rulesManager.IsCellsWithinBound(pos))
             .Select(pos => _checkerBoard.Cells[pos.x, pos.y]).ToList();
     }
+    
 
     public Vector3 GetEndPosition(GameBoardCell initialCell, GameBoardCell destinationCell)
     {

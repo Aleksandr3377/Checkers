@@ -18,8 +18,8 @@ public class CheckerBoard : MonoBehaviour
         InstantiateCheckBoard();
         InstantiateCheckers();
     }
-    
-    public void InstantiateCheckBoard()//todo:??
+
+    private void InstantiateCheckBoard()
     {
         Cells = new GameBoardCell[_rows, _colums];
         for (var row = 0; row < _rows; row++)

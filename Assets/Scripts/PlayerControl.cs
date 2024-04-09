@@ -5,7 +5,13 @@ public sealed class PlayerControl : PlayerControlBase
     private Transform _selectedWhiteChecker;
     private Transform _selectedRedChecker;
     private Transform _selectedCell;
+    public override PlayerType PlayerType => PlayerType.RealPlayer;
  
+    public void Init(GameColor gameColor)
+    {
+        GameColor = gameColor;
+    }
+    
     private void Update()
     {
         TryToSelectChecker();
