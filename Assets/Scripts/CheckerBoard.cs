@@ -1,5 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class CheckerBoard : MonoBehaviour
 {
@@ -7,8 +8,8 @@ public class CheckerBoard : MonoBehaviour
     public Checker checkerPrefab;
     public GameObject checkersParent;
     public GameBoardCell gameBoardCellPrefab;
-    private readonly int _rows = 8;
-    private readonly int _colums = 8;
+    public int Rows { get; } = 8;
+    public int Colums { get; } = 8;
     private readonly Color _gameBoardCellBlack = Color.black;
     private readonly Color _gameBoardCellWhite = Color.white; 
     public int StartCheckersCount = 12;
@@ -21,10 +22,10 @@ public class CheckerBoard : MonoBehaviour
 
     private void InstantiateCheckBoard()
     {
-        Cells = new GameBoardCell[_rows, _colums];
-        for (var row = 0; row < _rows; row++)
+        Cells = new GameBoardCell[Rows, Colums];
+        for (var row = 0; row < Rows; row++)
         {
-            for (var colum = 0; colum < _colums; colum++)
+            for (var colum = 0; colum < Colums; colum++)
             {
                 var currentColor = (row + colum) % 2 == 0 ? _gameBoardCellBlack : _gameBoardCellWhite;
                 var cell = Instantiate(gameBoardCellPrefab, new Vector3(row, 0, colum), Quaternion.identity, transform);

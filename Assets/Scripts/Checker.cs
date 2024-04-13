@@ -4,6 +4,10 @@ using UnityEngine;
 public class Checker : MonoBehaviour
 {
     public GameColor GameColor { get; private set; }
+
+    public float Height => _renderer.bounds.size.y;
+
+    [SerializeField] private MeshRenderer _renderer;
     private readonly Dictionary<GameColor, Color> _colors = new()
     {
         { GameColor.White, Color.white },
@@ -18,7 +22,6 @@ public class Checker : MonoBehaviour
 
     private void ChangeColor(Color colorOfObject)
     {
-        var rend = GetComponent<Renderer>();
-        rend.material.color = colorOfObject;
+        _renderer.material.color = colorOfObject;
     }
 }

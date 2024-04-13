@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ public class RulesManager : MonoBehaviour
     public bool CanUserBeatEnemy(GameBoardCell currentCell, GameBoardCell selectedCell)
     {
         if (!CanJump(currentCell.Position, selectedCell.Position)) return false;
-        
+
         var beatPosition =
             _gameBoardHelper.GetCellBetween(currentCell.Position, selectedCell.Position);
         return !beatPosition.IsEmpty && beatPosition.PlacedChecker.GameColor !=
@@ -27,7 +28,8 @@ public class RulesManager : MonoBehaviour
 
     public void CheckIfPlayerHasBeatenAllCheckers()
     {
-        var isPlayerBeatAllEnemyCheckers = _scoreManager.PlayerScores.Values.Any(score => score == _checkerBoard.StartCheckersCount);
+        var isPlayerBeatAllEnemyCheckers =
+            _scoreManager.PlayerScores.Values.Any(score => score == _checkerBoard.StartCheckersCount);
         if (!isPlayerBeatAllEnemyCheckers) return;
 
         var winColor = _scoreManager.PlayerScores.First(x => x.Value == _checkerBoard.StartCheckersCount).Key;
@@ -46,7 +48,7 @@ public class RulesManager : MonoBehaviour
         return pos.x >= 0 && pos.x < _checkerBoard.Cells.GetLength(0) &&
                pos.y >= 0 && pos.y < _checkerBoard.Cells.GetLength(1);
     }
-    
+
     public void CheckPossibilityOfMovements()
     {
         const int radius = 1;
@@ -90,22 +92,27 @@ public class RulesManager : MonoBehaviour
     public bool IsCheckerCanBeMoved(int direction, GameBoardCell previousSelectedCell,
         GameBoardCell selectedCell)
     {
-        return selectedCell.Position.x - previousSelectedCell.Position.x == direction &&
-               Mathf.Abs(selectedCell.Position.y - previousSelectedCell.Position.y) == 1;
+        // if(_moveData.QueenCells.Contains(previousSelectedCell))
+        // {
+        //     return  Mathf.Abs(selectedCell.Position.x-previousSelectedCell.Position.x)==Mathf.Abs(selectedCell.Position.y-previousSelectedCell.Position.y);
+        // }
+
+        return (selectedCell.Position.x - previousSelectedCell.Position.x == direction &&
+                Mathf.Abs(selectedCell.Position.y - previousSelectedCell.Position.y) == 1);
     }
-    
+
     public bool IsCheckerCanBeMovedToNeighbourCell(GameBoardCell selectedCell)
     {
         return _gameManager.CurrentlySelectedCell != null && _gameManager.CurrentlySelectedCell.HasRisenPlacedObject &&
                selectedCell.IsEmpty;
     }
-    
-    public void IsPlayerMustBeatEnemyChecker()
+
+    public void CheckIfPlayerMustBeatEnemyChecker()
     {
         foreach (var cell in _checkerBoard.Cells)
         {
             if (cell.IsEmpty || cell.PlacedChecker.GameColor != _gameManager.CurrentPlayer.GameColor) continue;
-            
+
             if (CanUserBeatEnemy(cell))
             {
                 _moveData.StartCellLocked = false;
@@ -115,6 +122,34 @@ public class RulesManager : MonoBehaviour
             else
             {
                 _moveData.StartCellLocked = false;
+            }
+        }
+    }
+
+    public void CheckIfCheckerTransformedToQueen()
+    {
+        for (var row = 0; row < _checkerBoard.Rows; row++)
+        {
+            for (var column = 0; column < _checkerBoard.Colums; column++)
+            {
+                var cell = _checkerBoard.Cells[row, column];
+                if (!cell.IsEmpty && _gameManager.CurrentPlayer.GameColor == GameColor.White)
+                {
+                    var positionWhereCellCanTransformToChecker = 7;
+
+                    if (cell != _checkerBoard.Cells[positionWhereCellCanTransformToChecker, column]) continue;
+                    
+                    _moveData.QueenCells.Add(cell);
+                    _gameBoardHelper.TransformCheckerToQueen(cell);
+                }
+                else
+                {
+                    var positionWhereCellCanTransformToChecker = 0;
+                    if (cell != _checkerBoard.Cells[positionWhereCellCanTransformToChecker, column]) continue;
+                    
+                    _moveData.QueenCells.Add(cell);
+                    _gameBoardHelper.TransformCheckerToQueen(cell);
+                }
             }
         }
     }

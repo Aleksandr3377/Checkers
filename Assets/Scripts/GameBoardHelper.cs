@@ -87,4 +87,13 @@ public class GameBoardHelper : MonoBehaviour
         var playerDirection = color == GameColor.White ? 1 : -1;
         return playerDirection;
     }
+    
+    public void TransformCheckerToQueen(GameBoardCell cell)
+    {
+        if (cell.IsEmpty) return;
+        
+        var currentRotation = cell.PlacedChecker.transform.rotation;
+        var newRotation = Quaternion.Euler(currentRotation.eulerAngles.x, currentRotation.eulerAngles.y + 180f, currentRotation.eulerAngles.z);
+        transform.rotation = newRotation;
+    }
 }

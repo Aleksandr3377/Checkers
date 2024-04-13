@@ -60,15 +60,17 @@ public class GameManager : MonoBehaviour
         {
             _movementManager.MoveCheckerToCell(startCell, destCell,()=>
             {
-                SwitchPlayer();
                 _rulesManager.CheckIfPlayerHasBeatenAllCheckers();
+                SwitchPlayer();
+                _rulesManager.CheckIfPlayerMustBeatEnemyChecker();
+                _rulesManager.CheckIfCheckerTransformedToQueen();
             });
-           //  _rulesManager.CheckIfPlayerCanBeatEnemyChecker();
         }
         else
         {
             TryToBeatEnemyChecker(moveData);
             _rulesManager.CheckIfPlayerHasBeatenAllCheckers();
+            _rulesManager.CheckIfCheckerTransformedToQueen();
         }
     }
 
@@ -99,7 +101,7 @@ public class GameManager : MonoBehaviour
             {
                 moveData.StartCellLocked = false;
                 SwitchPlayer();
-                _rulesManager.CanBeatEnemyChecker();
+                _rulesManager.CheckIfPlayerMustBeatEnemyChecker();
             }
         }
     }

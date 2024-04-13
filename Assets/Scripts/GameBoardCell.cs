@@ -17,7 +17,7 @@ public class GameBoardCell : MonoBehaviour
     
     public void Place(Checker checker)
     {
-        checker.transform.position = anchor.position + Vector3.up * checker.transform.lossyScale.y * 0.5f;
+        checker.transform.position = anchor.position;// + Vector3.up * (checker.Height * 0.5f);
         PlacedChecker = checker;
     }
 
@@ -43,13 +43,6 @@ public class GameBoardCell : MonoBehaviour
         var position = PlacedChecker.transform.position;
         DoTweenMovement(position);
         HasRisenPlacedObject = false;
-    }
-    
-    public void TakeChecker(GameBoardCell selectedCell)
-    {
-        var position = selectedCell.transform.position;
-        DoTweenMovement(position);
-        gameObject.SetActive(false);
     }
     
     public void ChangeColor(GameObject prefab, Color color)
