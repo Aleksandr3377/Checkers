@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PlayerSpawner _playerSpawner;
     [SerializeField] private float _timeScale = 1; 
     public PlayerControlBase CurrentPlayer { get; private set; }
-    private MoveData _moveData;
+    public MoveData _moveData;
     public GameBoardCell CurrentlySelectedCell => _checkerBoard.Cells.Cast<GameBoardCell>()
         .FirstOrDefault(x => x.HasRisenPlacedObject && x.PlacedChecker.GameColor == CurrentPlayer.GameColor);
 
@@ -63,14 +63,14 @@ public class GameManager : MonoBehaviour
                 _rulesManager.CheckIfPlayerHasBeatenAllCheckers();
                 SwitchPlayer();
                 _rulesManager.CheckIfPlayerMustBeatEnemyChecker();
-                _rulesManager.CheckIfCheckerTransformedToQueen();
+              //  _rulesManager.CheckIfCheckerTransformedToQueen();
             });
         }
         else
         {
             TryToBeatEnemyChecker(moveData);
             _rulesManager.CheckIfPlayerHasBeatenAllCheckers();
-            _rulesManager.CheckIfCheckerTransformedToQueen();
+           // _rulesManager.CheckIfCheckerTransformedToQueen();
         }
     }
 
@@ -137,7 +137,7 @@ public class GameManager : MonoBehaviour
 
         if (!cell.IsEmpty && cell.PlacedChecker.GameColor != CurrentPlayer.GameColor) return;
         
-        if (!cell.IsEmpty)
+        if (!cell.IsEmpty && (!_moveData.StartCellLocked || _moveData.StartCell == cell))
         {
             if (_moveData.StartCell != null)
             {
@@ -145,6 +145,7 @@ public class GameManager : MonoBehaviour
             }
 
             cell.RisePlacedObject();
+            
             _moveData.StartCell = cell;
         }
 

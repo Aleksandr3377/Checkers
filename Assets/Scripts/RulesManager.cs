@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -111,18 +112,18 @@ public class RulesManager : MonoBehaviour
     {
         foreach (var cell in _checkerBoard.Cells)
         {
+            Debug.Log(cell.Position);
             if (cell.IsEmpty || cell.PlacedChecker.GameColor != _gameManager.CurrentPlayer.GameColor) continue;
-
+            
             if (CanUserBeatEnemy(cell))
             {
-                _moveData.StartCellLocked = false;
-                _moveData.StartCell = cell;
-                _moveData.StartCellLocked = true;
+               _gameManager._moveData.StartCellLocked = false;
+              _gameManager._moveData.StartCell = cell;
+               _gameManager._moveData.StartCellLocked = true;
+                break;
             }
-            else
-            {
-                _moveData.StartCellLocked = false;
-            }
+            
+            _gameManager._moveData.StartCellLocked = false;
         }
     }
 
