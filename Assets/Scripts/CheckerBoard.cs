@@ -1,17 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CheckerBoard : MonoBehaviour
 {
     public GameBoardCell[,] Cells { get; private set; }
-    public Checker checkerPrefab;
-    public GameObject checkersParent;
-    public GameBoardCell gameBoardCellPrefab;
-    public int Rows { get; } = 8;
-    public int Colums { get; } = 8;
+    [SerializeField] private Checker _checkerPrefab;
+    [SerializeField] private GameObject _checkersParent;
+    [SerializeField] private GameBoardCell _gameBoardCellPrefab;
+    public int Rows => 8;
+    public int Colums => 8;
     private readonly Color _gameBoardCellBlack = Color.black;
-    private readonly Color _gameBoardCellWhite = Color.white; 
+    private readonly Color _gameBoardCellWhite = Color.white;
     public int StartCheckersCount = 12;
 
     private void Awake()
@@ -28,10 +26,11 @@ public class CheckerBoard : MonoBehaviour
             for (var colum = 0; colum < Colums; colum++)
             {
                 var currentColor = (row + colum) % 2 == 0 ? _gameBoardCellBlack : _gameBoardCellWhite;
-                var cell = Instantiate(gameBoardCellPrefab, new Vector3(row, 0, colum), Quaternion.identity, transform);
-                gameBoardCellPrefab.ChangeColor(cell.gameObject, currentColor);
+                var cell = Instantiate(_gameBoardCellPrefab, new Vector3(row, 0, colum), Quaternion.identity,
+                    transform);
+                _gameBoardCellPrefab.ChangeColor(cell.gameObject, currentColor);
                 cell.gameObject.SetActive(true);
-                cell.Init(new Vector2Int(row,colum));
+                cell.Init(new Vector2Int(row, colum));
                 Cells[row, colum] = cell;
             }
         }
@@ -44,13 +43,14 @@ public class CheckerBoard : MonoBehaviour
             for (var colum = row % 2; colum < Cells.GetLength(1); colum += 2)
             {
                 var currentGameBoardCell = Cells[row, colum];
-                if (row < 3)
+                switch (row)
                 {
-                    SpawnAndInitColorForChecker(currentGameBoardCell, GameColor.White);
-                }
-                else if (row > 4)
-                {
-                    SpawnAndInitColorForChecker(currentGameBoardCell, GameColor.Red);
+                    case < 3:
+                        SpawnAndInitColorForChecker(currentGameBoardCell, GameColor.White);
+                        break;
+                    case > 4:
+                        SpawnAndInitColorForChecker(currentGameBoardCell, GameColor.Red);
+                        break;
                 }
             }
         }
@@ -58,7 +58,7 @@ public class CheckerBoard : MonoBehaviour
 
     private void SpawnAndInitColorForChecker(GameBoardCell currentGameBoardCell, GameColor color)
     {
-        var checker = Instantiate(checkerPrefab,checkersParent.transform);
+        var checker = Instantiate(_checkerPrefab, _checkersParent.transform);
         checker.Init(color);
         currentGameBoardCell.Place(checker);
     }
