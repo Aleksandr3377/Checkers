@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 public class MoveData
 {
@@ -22,5 +21,5 @@ public class MoveData
      }
      public GameBoardCell DestCell;
      public bool StartCellLocked { get; set; }
-     public List<GameBoardCell> QueenCells;
+   //  public List<GameBoardCell> QueenCells;
 }
