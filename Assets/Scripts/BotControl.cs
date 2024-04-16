@@ -19,6 +19,7 @@ public sealed class BotControl : PlayerControlBase
         GameColor = color;
     }
     
+    // ReSharper disable Unity.PerformanceAnalysis
     public override void SelectCell(GameBoardCell startCell = null)
     {
         base.SelectCell(startCell);
@@ -27,7 +28,7 @@ public sealed class BotControl : PlayerControlBase
 
     private void RandomlySelectMove()
     {
-        var cellThatCanBeat = GetStartCellThatShouldBeat();
+        var cellThatCanBeat = GetStartCellThatShouldBeatEnemy();
         if (cellThatCanBeat != null)
         {
             var destCell = GetJumpDestCell(cellThatCanBeat);
@@ -44,17 +45,18 @@ public sealed class BotControl : PlayerControlBase
         }
     }
 
-    private GameBoardCell GetStartCellThatShouldBeat()
+    private GameBoardCell GetStartCellThatShouldBeatEnemy()
     {
         if (StartCell != null)
         {
             return StartCell;
         }
+        
         var cellsThatCanBeat = GetCellsThatCanBeatEnemy();
         if (!cellsThatCanBeat.Any()) return null;
         
-        var randomCellIndexThatCanBeat = Random.Range(0, cellsThatCanBeat.Count - 1);
-        return cellsThatCanBeat[randomCellIndexThatCanBeat];
+        var cellWithCheckerToBeat = Random.Range(0, cellsThatCanBeat.Count - 1);
+        return cellsThatCanBeat[cellWithCheckerToBeat];
 
     }
 
@@ -64,6 +66,7 @@ public sealed class BotControl : PlayerControlBase
         StartCoroutine(DelayMove(destCell));
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     private IEnumerator DelayMove(GameBoardCell destCell)
     {
         yield return new WaitForSeconds(0.5f);
