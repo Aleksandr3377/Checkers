@@ -5,8 +5,6 @@ public class Checker : MonoBehaviour
 {
     public GameColor GameColor { get; private set; }
 
-    public float Height => _renderer.bounds.size.y;
-
     [SerializeField] private MeshRenderer _renderer;
     private readonly Dictionary<GameColor, Color> _colors = new()
     {
