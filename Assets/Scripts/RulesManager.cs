@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -16,7 +14,7 @@ public class RulesManager : MonoBehaviour
         if (!CanJump(currentCell.Position, selectedCell.Position)) return false;
 
         var beatPosition =
-            _gameBoardHelper.GetCellBetween(currentCell.Position, selectedCell.Position);
+            _gameBoardHelper.GetCellBetweenStartAndDestCells(currentCell.Position, selectedCell.Position);
         return !beatPosition.IsEmpty && beatPosition.PlacedChecker.GameColor !=
             _gameManager.CurrentPlayer.GameColor;
     }
@@ -39,9 +37,9 @@ public class RulesManager : MonoBehaviour
 
     private static bool CanJump(Vector2Int currentPosition, Vector2Int destPosition)
     {
-        var availableDistanceToBeatEnemy = 2;
-        return Mathf.Abs(destPosition.x - currentPosition.x) == availableDistanceToBeatEnemy &&
-               Mathf.Abs(destPosition.y - currentPosition.y) == availableDistanceToBeatEnemy;
+        var distanceToBeatEnemy = 2;
+        return Mathf.Abs(destPosition.x - currentPosition.x) == distanceToBeatEnemy &&
+               Mathf.Abs(destPosition.y - currentPosition.y) == distanceToBeatEnemy;
     }
 
     public bool IsCellsWithinBound(Vector2Int pos)
@@ -114,44 +112,44 @@ public class RulesManager : MonoBehaviour
         {
             Debug.Log(cell.Position);
             if (cell.IsEmpty || cell.PlacedChecker.GameColor != _gameManager.CurrentPlayer.GameColor) continue;
-            
+
             if (CanUserBeatEnemy(cell))
             {
-               _gameManager._moveData.StartCellLocked = false;
-              _gameManager._moveData.StartCell = cell;
-               _gameManager._moveData.StartCellLocked = true;
+                _gameManager.MoveData.StartCellLocked = false;
+                _gameManager.MoveData.StartCell = cell;
+                _gameManager.MoveData.StartCellLocked = true;
                 break;
             }
-            
-            _gameManager._moveData.StartCellLocked = false;
+
+            _gameManager.MoveData.StartCellLocked = false;
         }
     }
 
-    public void CheckIfCheckerTransformedToQueen()
-    {
-        for (var row = 0; row < _checkerBoard.Rows; row++)
-        {
-            for (var column = 0; column < _checkerBoard.Colums; column++)
-            {
-                var cell = _checkerBoard.Cells[row, column];
-                if (!cell.IsEmpty && _gameManager.CurrentPlayer.GameColor == GameColor.White)
-                {
-                    var positionWhereCellCanTransformToChecker = 7;
-
-                    if (cell != _checkerBoard.Cells[positionWhereCellCanTransformToChecker, column]) continue;
-                    
-                    _moveData.QueenCells.Add(cell);
-                    _gameBoardHelper.TransformCheckerToQueen(cell);
-                }
-                else
-                {
-                    var positionWhereCellCanTransformToChecker = 0;
-                    if (cell != _checkerBoard.Cells[positionWhereCellCanTransformToChecker, column]) continue;
-                    
-                    _moveData.QueenCells.Add(cell);
-                    _gameBoardHelper.TransformCheckerToQueen(cell);
-                }
-            }
-        }
-    }
+    // public void CheckIfCheckerTransformedToQueen()
+    // {
+    //     for (var row = 0; row < _checkerBoard.Rows; row++)
+    //     {
+    //         for (var column = 0; column < _checkerBoard.Colums; column++)
+    //         {
+    //             var cell = _checkerBoard.Cells[row, column];
+    //             if (!cell.IsEmpty && _gameManager.CurrentPlayer.GameColor == GameColor.White)
+    //             {
+    //                 var positionWhereCellCanTransformToChecker = 7;
+    //
+    //                 if (cell != _checkerBoard.Cells[positionWhereCellCanTransformToChecker, column]) continue;
+    //
+    //                 _moveData.QueenCells.Add(cell);
+    //                     // _gameBoardHelper.TransformCheckerToQueen(cell);
+    //             }
+    //             else
+    //             {
+    //                 var positionWhereCellCanTransformToChecker = 0;
+    //                 if (cell != _checkerBoard.Cells[positionWhereCellCanTransformToChecker, column]) continue;
+    //
+    //                 _moveData.QueenCells.Add(cell);
+    //                // _gameBoardHelper.TransformCheckerToQueen(cell);
+    //             }
+    //         }
+    //     }
+    // }
 }
