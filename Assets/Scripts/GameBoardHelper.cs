@@ -6,22 +6,22 @@ using UnityEngine;
 
 public class GameBoardHelper : MonoBehaviour
 {
-   [SerializeField] private CheckerBoard _checkerBoard;
-   [SerializeField] private RulesManager _rulesManager;
+    [SerializeField] private CheckerBoard _checkerBoard;
+    [SerializeField] private RulesManager _rulesManager;
 
-    public GameBoardCell GetCellBetween(Vector2Int prevPosition, Vector2Int destPosition)
+    public GameBoardCell GetCellBetweenStartAndDestCells(Vector2Int prevPosition, Vector2Int destPosition)
     {
-        var jumpThroughCellPos = (prevPosition + destPosition) / 2;
-        return _checkerBoard.Cells[jumpThroughCellPos.x, jumpThroughCellPos.y];
+        var cellBetween = (prevPosition + destPosition) / 2;
+        return _checkerBoard.Cells[cellBetween.x, cellBetween.y];
     }
 
-    public List<GameBoardCell> GetAvailableJumpDestinationCells(GameBoardCell cell)
+    public IEnumerable<GameBoardCell> GetAvailableJumpDestinationCells(GameBoardCell cell)
     {
         var potentialPositions = GetPotentialPositions(cell, 2);
         var boardCells = GetBoardCells(potentialPositions);
         return boardCells.Where(x => x.IsEmpty).ToList();
     }
-    
+
     public Vector2Int[] GetPotentialPositions(GameBoardCell cell, int distance)
     {
         var potentialPositions = new[]
@@ -33,15 +33,15 @@ public class GameBoardHelper : MonoBehaviour
         };
         return potentialPositions;
     }
-    
-    public List<GameBoardCell> GetAvailableCells(GameBoardCell cell,GameColor color)
+
+    public List<GameBoardCell> GetAvailableCells(GameBoardCell cell, GameColor color)
     {
-        var potentialPositions = GetPotentialPositionsToMove(cell,color);
+        var potentialPositions = GetPotentialPositionsToMove(cell, color);
         var boardCells = GetBoardCells(potentialPositions);
         return boardCells.Where(x => x.IsEmpty).ToList();
     }
 
-    private Vector2Int[] GetPotentialPositionsToMove(GameBoardCell cell, GameColor color) //todo: Знайти помилку
+    private Vector2Int[] GetPotentialPositionsToMove(GameBoardCell cell, GameColor color)
     {
         if (color == GameColor.White)
         {
@@ -61,9 +61,7 @@ public class GameBoardHelper : MonoBehaviour
             };
             return potentialPositions;
         }
-      
     }
-
 
     public IEnumerable<GameBoardCell> GetBoardCells([NotNull] Vector2Int[] positions)
     {
@@ -73,12 +71,11 @@ public class GameBoardHelper : MonoBehaviour
             .Where(pos => _rulesManager.IsCellsWithinBound(pos))
             .Select(pos => _checkerBoard.Cells[pos.x, pos.y]).ToList();
     }
-    
 
     public Vector3 GetEndPosition(GameBoardCell initialCell, GameBoardCell destinationCell)
     {
         var checkerTransform = initialCell.PlacedChecker.transform;
-        var endPosition = destinationCell.anchor.position + 0.5f * checkerTransform.lossyScale.y * Vector3.up;
+        var endPosition = destinationCell.Anchor.position + 0.5f * checkerTransform.lossyScale.y * Vector3.up;
         return endPosition;
     }
 
@@ -87,13 +84,13 @@ public class GameBoardHelper : MonoBehaviour
         var playerDirection = color == GameColor.White ? 1 : -1;
         return playerDirection;
     }
-    
-    public void TransformCheckerToQueen(GameBoardCell cell)
-    {
-        if (cell.IsEmpty) return;
-        
-        var currentRotation = cell.PlacedChecker.transform.rotation;
-        var newRotation = Quaternion.Euler(currentRotation.eulerAngles.x, currentRotation.eulerAngles.y + 180f, currentRotation.eulerAngles.z);
-        transform.rotation = newRotation;
-    }
+
+    // public void TransformCheckerToQueen(GameBoardCell cell)
+    // {
+    //     if (cell.IsEmpty) return;
+    //     
+    //     var currentRotation = cell.PlacedChecker.transform.rotation;
+    //     var newRotation = Quaternion.Euler(currentRotation.eulerAngles.x, currentRotation.eulerAngles.y + 180f, currentRotation.eulerAngles.z);
+    //     transform.rotation = newRotation;
+    // }
 }
