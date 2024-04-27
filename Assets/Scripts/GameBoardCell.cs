@@ -1,6 +1,5 @@
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class GameBoardCell : MonoBehaviour
 {
@@ -8,9 +7,15 @@ public class GameBoardCell : MonoBehaviour
     public Checker PlacedChecker { get; private set; }
     public bool HasRisenPlacedObject { get; private set; }
     public bool IsEmpty => PlacedChecker == null;
-    public Vector2Int Position { get; private set; }
+    public Vector2Int Position { get; private set; } 
+  //  private SoundControl _soundControl;
 
-    public void Init(Vector2Int position)
+    // public void Init(SoundControl soundControl)
+    // {
+    //     _soundControl = soundControl;
+    // }
+    
+    public void InitCell(Vector2Int position)
     {
         Position = position;
         gameObject.name += $"X:{position.x},Y:{position.y}";

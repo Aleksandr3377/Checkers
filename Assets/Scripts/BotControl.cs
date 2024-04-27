@@ -121,7 +121,7 @@ public sealed class BotControl : PlayerControlBase
         foreach (var position in sortedPositions)
         {
             var assumableEnemyPosition =
-                _gameBoardHelper.GetCellBetween(cellThatCanBeat.Position, position);
+                _gameBoardHelper.GetCellBetweenStartAndDestCells(cellThatCanBeat.Position, position);
             if (assumableEnemyPosition.IsEmpty || assumableEnemyPosition.PlacedChecker.GameColor == GameColor) continue;
             
             var destCell = _checkerBoard.Cells[position.x, position.y];

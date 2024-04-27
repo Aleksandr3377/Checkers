@@ -3,22 +3,23 @@ using UnityEngine;
 public class CheckerBoard : MonoBehaviour
 {
     public GameBoardCell[,] Cells { get; private set; }
-    [SerializeField] private Checker _checkerPrefab;
-    [SerializeField] private GameObject _checkersParent;
-    [SerializeField] private GameBoardCell _gameBoardCellPrefab;
     public int Rows => 8;
     public int Colums => 8;
     private readonly Color _gameBoardCellBlack = Color.black;
     private readonly Color _gameBoardCellWhite = Color.white;
     public int StartCheckersCount = 12;
+    [SerializeField] private Checker _checkerPrefab;
+    [SerializeField] private GameObject _checkersParent;
+    [SerializeField] private GameBoardCell _gameBoardCellPrefab;
+    // [SerializeField] private SoundControl _soundControl;
 
     private void Awake()
     {
-        InstantiateCheckBoard();
+        InstantiateCheckerBoard();
         InstantiateCheckers();
     }
 
-    private void InstantiateCheckBoard()
+    private void InstantiateCheckerBoard()
     {
         Cells = new GameBoardCell[Rows, Colums];
         for (var row = 0; row < Rows; row++)
@@ -28,9 +29,10 @@ public class CheckerBoard : MonoBehaviour
                 var currentColor = (row + colum) % 2 == 0 ? _gameBoardCellBlack : _gameBoardCellWhite;
                 var cell = Instantiate(_gameBoardCellPrefab, new Vector3(row, 0, colum), Quaternion.identity,
                     transform);
+                // cell.Init(_soundControl);
                 _gameBoardCellPrefab.ChangeColor(cell.gameObject, currentColor);
                 cell.gameObject.SetActive(true);
-                cell.Init(new Vector2Int(row, colum));
+                cell.InitCell(new Vector2Int(row, colum));
                 Cells[row, colum] = cell;
             }
         }
@@ -61,5 +63,13 @@ public class CheckerBoard : MonoBehaviour
         var checker = Instantiate(_checkerPrefab, _checkersParent.transform);
         checker.Init(color);
         currentGameBoardCell.Place(checker);
+    }
+
+    public Vector3 CalculateCenterOfDesk()
+    {
+        var firstCell = Cells[0, 0];
+        var fourthCell = Cells[7, 7];
+        var centerOfGameBoard = (firstCell.transform.position + fourthCell.transform.position) / 2f;
+        return centerOfGameBoard;
     }
 }

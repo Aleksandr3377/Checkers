@@ -16,9 +16,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button _buttonRestart; 
     [SerializeField] public TextMeshProUGUI DefinedWinner;
     [SerializeField] private PlayerSpawner _playerSpawner;
-    [SerializeField] private float _timeScale = 1; 
+    [SerializeField] private float _timeScale = 1;
+    [SerializeField] private SoundControl _soundControl;
     public PlayerControlBase CurrentPlayer { get; private set; }
-    public MoveData _moveData;
+    public MoveData MoveData;
     public GameBoardCell CurrentlySelectedCell => _checkerBoard.Cells.Cast<GameBoardCell>()
         .FirstOrDefault(x => x.HasRisenPlacedObject && x.PlacedChecker.GameColor == CurrentPlayer.GameColor);
 
@@ -60,6 +61,7 @@ public class GameManager : MonoBehaviour
         {
             _movementManager.MoveCheckerToCell(startCell, destCell,()=>
             {
+                _soundControl.PlaySound(SoundEffectType.Move);
                 _rulesManager.CheckIfPlayerHasBeatenAllCheckers();
                 SwitchPlayer();
                 _rulesManager.CheckIfPlayerMustBeatEnemyChecker();
@@ -79,8 +81,9 @@ public class GameManager : MonoBehaviour
         if (!_rulesManager.CanUserBeatEnemy(moveData.StartCell, moveData.DestCell)) return;
         
         _movementManager.MoveCheckerToCell(moveData.StartCell, moveData.DestCell, OnMoveFinished);
+        _soundControl.PlaySound(SoundEffectType.Beat);
         var enemyPosition =
-            _gameBoardHelper.GetCellBetween(moveData.StartCell.Position, moveData.DestCell.Position);
+            _gameBoardHelper.GetCellBetweenStartAndDestCells(moveData.StartCell.Position, moveData.DestCell.Position);
         RemoveChecker(enemyPosition);
         _scoreManager.AddScore(CurrentPlayer.GameColor,1);
         var isPlayerShouldBeatAnotherChecker = _rulesManager.CanUserBeatEnemy(moveData.DestCell);
@@ -128,39 +131,42 @@ public class GameManager : MonoBehaviour
         if (cell.HasRisenPlacedObject)
         {
             cell.MovePlacedObjectToGround();
-            if (!_moveData.StartCellLocked)
+            _soundControl.PlaySound(SoundEffectType.Rise);
+            if (!MoveData.StartCellLocked)
             {
-                _moveData.StartCell = null;
+                MoveData.StartCell = null;
             }
             return;
         }
 
         if (!cell.IsEmpty && cell.PlacedChecker.GameColor != CurrentPlayer.GameColor) return;
         
-        if (!cell.IsEmpty && (!_moveData.StartCellLocked || _moveData.StartCell == cell))
+        if (!cell.IsEmpty && (!MoveData.StartCellLocked || MoveData.StartCell == cell))
         {
-            if (_moveData.StartCell != null)
+            if (MoveData.StartCell != null)
             {
-                _moveData.StartCell.MovePlacedObjectToGround();
+                MoveData.StartCell.MovePlacedObjectToGround();
+                _soundControl.PlaySound(SoundEffectType.Rise);
             }
 
             cell.RisePlacedObject();
+            _soundControl.PlaySound(SoundEffectType.Rise);
             
-            _moveData.StartCell = cell;
+            MoveData.StartCell = cell;
         }
 
         if (!_rulesManager.IsCheckerCanBeMovedToNeighbourCell(cell)) return;
 
-        if (!_moveData.StartCellLocked)
+        if (!MoveData.StartCellLocked)
         {
-            _moveData.DestCell = cell;
-            MakeMove(_moveData);
+            MoveData.DestCell = cell;
+            MakeMove(MoveData);
         }
 
-        if (!_moveData.StartCellLocked || _moveData.StartCell != CurrentlySelectedCell) return;
+        if (!MoveData.StartCellLocked || MoveData.StartCell != CurrentlySelectedCell) return;
         
-        _moveData.DestCell = cell;
-        TryToBeatEnemyChecker(_moveData);
+        MoveData.DestCell = cell;
+        TryToBeatEnemyChecker(MoveData);
     }
     
     private void SetInitialPlayer()
@@ -176,7 +182,7 @@ public class GameManager : MonoBehaviour
 
     private void ActivateCurrentPlayer()
     {
-        _moveData = new MoveData();
+        MoveData = new MoveData();
         CurrentPlayer.CellWasSelected += TryToMove;
         CurrentPlayer.SelectCell();
     }

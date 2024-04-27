@@ -28,7 +28,7 @@ public class RulesManager : MonoBehaviour
     public void CheckIfPlayerHasBeatenAllCheckers()
     {
         var isPlayerBeatAllEnemyCheckers =
-            _scoreManager.PlayerScores.Values.Any(score => score == _checkerBoard.StartCheckersCount);
+            _scoreManager.PlayerScores.Any(score => score.Value ==_checkerBoard.StartCheckersCount);
         if (!isPlayerBeatAllEnemyCheckers) return;
 
         var winColor = _scoreManager.PlayerScores.First(x => x.Value == _checkerBoard.StartCheckersCount).Key;
@@ -50,15 +50,14 @@ public class RulesManager : MonoBehaviour
 
     public void CheckPossibilityOfMovements()
     {
-        const int radius = 1;
         var isCellHasToMove = false;
         foreach (var cell in _checkerBoard.Cells)
         {
             if (cell.IsEmpty || cell.PlacedChecker.GameColor != _gameManager.CurrentPlayer.GameColor) continue;
-
-            var potentialPositions = _gameBoardHelper.GetPotentialPositions(cell, radius);
+            
+            var potentialPositions = _gameBoardHelper.GetPotentialPositionsToMove(cell, _gameManager.CurrentPlayer.GameColor);
             var availableCellsToMove = _gameBoardHelper.GetBoardCells(potentialPositions);
-            availableCellsToMove = availableCellsToMove.Where(x => !x.IsEmpty).ToList();
+            availableCellsToMove = availableCellsToMove.Where(x => x.IsEmpty).ToList();
             isCellHasToMove = availableCellsToMove.Any();
             if (isCellHasToMove) break;
         }
@@ -72,6 +71,7 @@ public class RulesManager : MonoBehaviour
     {
         if (_gameManager.CurrentPlayer.GameColor == color)
             _gameManager.DefinedWinner.text = "Red player has won";
+        
         else if (_gameManager.CurrentPlayer.GameColor != color)
             _gameManager.DefinedWinner.text = "White player has won";
         _gameManager.ActivateButtonRestart();
@@ -91,11 +91,6 @@ public class RulesManager : MonoBehaviour
     public bool IsCheckerCanBeMoved(int direction, GameBoardCell previousSelectedCell,
         GameBoardCell selectedCell)
     {
-        // if(_moveData.QueenCells.Contains(previousSelectedCell))
-        // {
-        //     return  Mathf.Abs(selectedCell.Position.x-previousSelectedCell.Position.x)==Mathf.Abs(selectedCell.Position.y-previousSelectedCell.Position.y);
-        // }
-
         return (selectedCell.Position.x - previousSelectedCell.Position.x == direction &&
                 Mathf.Abs(selectedCell.Position.y - previousSelectedCell.Position.y) == 1);
     }
@@ -110,14 +105,13 @@ public class RulesManager : MonoBehaviour
     {
         foreach (var cell in _checkerBoard.Cells)
         {
-            Debug.Log(cell.Position);
             if (cell.IsEmpty || cell.PlacedChecker.GameColor != _gameManager.CurrentPlayer.GameColor) continue;
 
             if (CanUserBeatEnemy(cell))
             {
-                _gameManager.MoveData.StartCellLocked = false;
-                _gameManager.MoveData.StartCell = cell;
-                _gameManager.MoveData.StartCellLocked = true;
+                 _gameManager.MoveData.StartCellLocked = false;
+                 _gameManager.MoveData.StartCell = cell;
+                 _gameManager.MoveData.StartCellLocked = true;
                 break;
             }
 

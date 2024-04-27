@@ -41,7 +41,7 @@ public class GameBoardHelper : MonoBehaviour
         return boardCells.Where(x => x.IsEmpty).ToList();
     }
 
-    private Vector2Int[] GetPotentialPositionsToMove(GameBoardCell cell, GameColor color)
+    public Vector2Int[] GetPotentialPositionsToMove(GameBoardCell cell, GameColor color)
     {
         if (color == GameColor.White)
         {
