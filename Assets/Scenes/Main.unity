@@ -774,12 +774,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d7bf60a44ee46329ee7ddddebafb924, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _zoomSpeedForMouse: 500
-  _zoomSpeedForTouchScreen: 3
-  _rotationSpeed: 2
   _checkerBoard: {fileID: 753552546}
-  _minZoom: 1
-  _maxZoom: 100
+  MinZoom: 5
+  MaxZoom: 20
+  _smoothness: 5
+  _zoomSpeed: 1000
+  _rotationSpeed: 10
 --- !u!1 &919438293
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,32 +1,29 @@
-using UnityEditor.Rendering;
 using UnityEngine;
 
-public class MouseControl:CameraControl
+public class MouseControl : CameraControl
 {
-    protected override void ChangeGameZoom()
+    [SerializeField] private float _rotationSpeed = 2f;
+    
+    protected override float GetDeltaZoom()
     {
-        var scrollWheelInput = Input.GetAxis("Mouse ScrollWheel");
-        Debug.Log($"{Time.frameCount} scrollInput = {scrollWheelInput}");
-        var deltaPos = transform.forward * (scrollWheelInput * _zoomSpeedForMouse * Time.deltaTime);
-        Debug.Log($"{Time.frameCount} deltaPos =  {deltaPos}");
-        var nextPos = transform.position + deltaPos;
-        Debug.Log($"{Time.frameCount} nextPos =  {nextPos}");
-        var nextDistanceToTarget = Vector3.Distance(_target.position, nextPos);
-        Debug.Log($"{Time.frameCount} nextDistance =  {nextDistanceToTarget}"); 
-        var clampedDistance = Mathf.Clamp(nextDistanceToTarget, _minZoom, _maxZoom);
-        nextPos = _target.position - transform.forward * clampedDistance;
-        transform.position = nextPos;
+        var zoomValue = Input.GetAxis("Mouse ScrollWheel");
+        return zoomValue;
     }
 
-    protected override void ChangeOrbitCamera()
+    protected override void RotateCamera()
     {
-        if (Input.GetMouseButton(0))
-        {
-            RotateCamera(Devices.Mouse);
-        }
-        else
-        {
-            // ApplyInertiaForMouse();
-        }
+        var inputPos = Input.mousePosition;
+        _deltaMousePos = inputPos - _previousMousePos;
+        _previousMousePos = inputPos;
+        // var prevPos = transform.position;
+        // var prevRotation = transform.rotation;
+        transform.RotateAround(Target.position, Vector3.up,
+            _deltaMousePos.x * _rotationSpeed * Time.deltaTime);
+        transform.RotateAround(Target.position, transform.right,
+            -_deltaMousePos.y * _rotationSpeed * Time.deltaTime);
+        FinalePosition = transform.position;
+        // FinaleRotation = transform.rotation;
+        // transform.position = prevPos;
+        // transform.rotation = prevRotation;
     }
 }
