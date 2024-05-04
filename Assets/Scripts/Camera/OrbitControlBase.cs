@@ -19,12 +19,12 @@ public abstract class OrbitControlBase : CameraControlBase
 
     private void Update()
     {
-        // _finalRotY += GetDeltaRotY();
-        // var nextRotY = Mathf.Lerp(_currentRotY, _finalRotY, Time.deltaTime * Smoothness);
-        // var deltaRotY = nextRotY - _currentRotY;
-        // Debug.Log(GetDeltaRotY());
-        // transform.RotateAround(Target.position, Vector3.up, deltaRotY);
-        // _currentRotY = nextRotY;
+        _finalRotY += GetDeltaRotY();
+        var nextRotY = Mathf.Lerp(_currentRotY, _finalRotY, Time.deltaTime * Smoothness);
+        var deltaRotY = nextRotY - _currentRotY;
+        Debug.Log(GetDeltaRotY());
+        transform.RotateAround(Target.position, Vector3.up, deltaRotY);
+        _currentRotY = nextRotY;
         
         _finalRotX += GetDeltaRotX();
         var nextRotX = Mathf.Lerp(_currentRotX, _finalRotX, Time.deltaTime * Smoothness);

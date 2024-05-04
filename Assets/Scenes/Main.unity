@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44824904, g: 0.49827605, b: 0.57558316, a: 1}
+  m_IndirectSpecularColor: {r: 0.44824868, g: 0.49827558, b: 0.57558274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -777,7 +777,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _checkerBoard: {fileID: 753552546}
-  Smoothness: 5
+  Smoothness: 0.5
   _zoomSpeed: 1000
   MinZoom: 5
   MaxZoom: 20
@@ -794,8 +794,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _checkerBoard: {fileID: 753552546}
-  Smoothness: 1
-  RotationSpeed: 2
+  Smoothness: 2
+  RotationSpeed: 0.2
 --- !u!114 &902848994
 MonoBehaviour:
   m_ObjectHideFlags: 0
