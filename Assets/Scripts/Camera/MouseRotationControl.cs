@@ -2,26 +2,22 @@ using UnityEngine;
 
 public class MouseRotationControl : OrbitControlBase
 {
-    // protected override void RotateCamera()
-    // {
-    //     var inputPos = Input.mousePosition;
-    //    // DeltaMousePos = inputPos - PreviousMousePos;
-    //     PreviousMousePos = inputPos;
-    //     // var prevPos = transform.position;
-    //     // var prevRotation = transform.rotation;
-    //     transform.RotateAround(Target.position, Vector3.up,
-    //      //   DeltaMousePos.x * RotationSpeed * Time.deltaTime);
-    //     transform.RotateAround(Target.position, transform.right,
-    //      //   -DeltaMousePos.y * RotationSpeed * Time.deltaTime);
-    //    // TargetPosition = transform.position;
-    //     // FinaleRotation = transform.rotation;
-    //     // transform.position = prevPos;
-    //     // transform.rotation = prevRotation;
-    // }
-
+    private readonly float _maxRotationX = 120f;
+    
     protected override float GetDeltaRotX()
     {
-        return GetMouseDelta().y * RotationSpeed;
+        var deltaRotX= GetMouseDelta().y * RotationSpeed;
+        var nextRotX = _finalRotX + deltaRotX;
+        if (nextRotX > _maxRotationX)
+        {
+            deltaRotX = _maxRotationX - _finalRotX;
+        }
+        else if (nextRotX < -_maxRotationX)
+        {
+            deltaRotX = _maxRotationX - _finalRotX;
+        }
+
+        return deltaRotX;
     }
     
     protected override float GetDeltaRotY()
@@ -31,7 +27,7 @@ public class MouseRotationControl : OrbitControlBase
     
     private Vector2 GetMouseDelta()
     {
-        if (!Input.GetMouseButton(0) || Input.GetMouseButtonDown(0))
+        if (!Input.GetMouseButton(0) || Input.GetMouseButtonDown(0) || Input.touchCount>1)
         {
             return Vector2.zero;
         }
