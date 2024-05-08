@@ -9,12 +9,12 @@ namespace SoundEffects
     {
         private AudioSource _audioSource;
         [SerializeField] protected List<SoundEffectInfo> _soundEffects = new();
-    
-        protected virtual void Start()
+
+        private void Awake()
         {
             _audioSource = gameObject.AddComponent<AudioSource>();
         }
-    
+        
         public void PlaySound(SoundEffectType soundType)
         {
             var soundEffectInfo = _soundEffects.FirstOrDefault(soundInfo => soundInfo.SoundEffectType == soundType);

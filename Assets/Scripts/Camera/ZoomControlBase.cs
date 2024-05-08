@@ -1,7 +1,7 @@
 using UnityEngine;
 
-public abstract class ZoomControlBase:CameraControlBase
-{ 
+public abstract class ZoomControlBase : CameraControlBase
+{
     [SerializeField] protected float ZoomSpeed = 1000f;
     [SerializeField] protected float MinZoom = 1.0f;
     [SerializeField] protected float MaxZoom = 10.0f;
@@ -17,21 +17,12 @@ public abstract class ZoomControlBase:CameraControlBase
 
     private void Update()
     {
-        var deltaZoom =  GetDeltaZoom(); 
+        var deltaZoom = GetDeltaZoom();
         _finalZoom -= deltaZoom;
         _finalZoom = Mathf.Clamp(_finalZoom, MinZoom, MaxZoom);
         _currentZoom = Mathf.Lerp(_currentZoom, _finalZoom, Smoothness * Time.deltaTime);
         transform.position = Target.position + (transform.position - Target.position).normalized * _currentZoom;
-        
-        
-        
-        
-            // AddZoom(deltaZoom); 
-     //   transform.position = Vector3.Lerp(transform.position, FinalPosition, Smoothness * Time.deltaTime); //todo: test together simultaneously
     }
-    
-  
-    
+
     protected abstract float GetDeltaZoom();
-  
 }

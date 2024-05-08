@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using SoundEffects;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,23 +9,25 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private RulesManager _rulesManager;
-    [SerializeField] private GameBoardHelper _gameBoardHelper; 
+    [SerializeField] private GameBoardHelper _gameBoardHelper;
     [SerializeField] private MovementManager _movementManager;
     [SerializeField] private PlayerControlBase[] _players;
     [SerializeField] private ScoreManager _scoreManager;
     [SerializeField] private CheckerBoard _checkerBoard;
-    [SerializeField] private Button _buttonRestart; 
+    [SerializeField] private Button _buttonRestart;
     [SerializeField] public TextMeshProUGUI DefinedWinner;
     [SerializeField] private PlayerSpawner _playerSpawner;
     [SerializeField] private float _timeScale = 1;
     [SerializeField] private SoundControl _soundControl;
+    [SerializeField] private ParticleEffectController _particleEffectController;
     public PlayerControlBase CurrentPlayer { get; private set; }
     public MoveData MoveData;
+
     public GameBoardCell CurrentlySelectedCell => _checkerBoard.Cells.Cast<GameBoardCell>()
         .FirstOrDefault(x => x.HasRisenPlacedObject && x.PlacedChecker.GameColor == CurrentPlayer.GameColor);
 
     private void Awake()
-    { 
+    {
         _players = _playerSpawner.SpawnPlayers(GameGlobalData.SpawnPlayerData).ToArray();
     }
 
@@ -35,7 +38,7 @@ public class GameManager : MonoBehaviour
         SwitchPlayer();
         _buttonRestart.gameObject.SetActive(false);
     }
-    
+
     private void SwitchPlayer()
     {
         if (CurrentPlayer == null)
@@ -59,33 +62,34 @@ public class GameManager : MonoBehaviour
         var destCell = moveData.DestCell;
         if (_rulesManager.IsCheckerCanBeMoved(playerDirection, startCell, destCell))
         {
-            _movementManager.MoveCheckerToCell(startCell, destCell,()=>
+            _movementManager.MoveCheckerToCell(startCell, destCell, () =>
             {
                 _soundControl.PlaySound(SoundEffectType.Move);
                 _rulesManager.CheckIfPlayerHasBeatenAllCheckers();
                 SwitchPlayer();
                 _rulesManager.CheckIfPlayerMustBeatEnemyChecker();
-              //  _rulesManager.CheckIfCheckerTransformedToQueen();
+                //  _rulesManager.CheckIfCheckerTransformedToQueen();
             });
         }
         else
         {
             TryToBeatEnemyChecker(moveData);
             _rulesManager.CheckIfPlayerHasBeatenAllCheckers();
-           // _rulesManager.CheckIfCheckerTransformedToQueen();
+            // _rulesManager.CheckIfCheckerTransformedToQueen();
         }
     }
 
     private void TryToBeatEnemyChecker(MoveData moveData)
     {
         if (!_rulesManager.CanUserBeatEnemy(moveData.StartCell, moveData.DestCell)) return;
-        
+
         _movementManager.MoveCheckerToCell(moveData.StartCell, moveData.DestCell, OnMoveFinished);
         _soundControl.PlaySound(SoundEffectType.Beat);
+        _particleEffectController.CreateParticleEffect(moveData.DestCell.transform.position);
         var enemyPosition =
             _gameBoardHelper.GetCellBetweenStartAndDestCells(moveData.StartCell.Position, moveData.DestCell.Position);
         RemoveChecker(enemyPosition);
-        _scoreManager.AddScore(CurrentPlayer.GameColor,1);
+        _scoreManager.AddScore(CurrentPlayer.GameColor, 1);
         var isPlayerShouldBeatAnotherChecker = _rulesManager.CanUserBeatEnemy(moveData.DestCell);
         if (isPlayerShouldBeatAnotherChecker)
         {
@@ -93,7 +97,7 @@ public class GameManager : MonoBehaviour
             moveData.StartCell = moveData.DestCell;
             moveData.StartCellLocked = true;
         }
-        
+
         void OnMoveFinished()
         {
             if (_rulesManager.CanUserBeatEnemy(moveData.DestCell))
@@ -108,13 +112,13 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    
+
     public void ActivateButtonRestart()
     {
         _buttonRestart.gameObject.SetActive(true);
         _buttonRestart.onClick.AddListener(RestartGame);
     }
-    
+
     private static void RestartGame()
     {
         SceneManager.LoadScene("Menu");
@@ -136,11 +140,12 @@ public class GameManager : MonoBehaviour
             {
                 MoveData.StartCell = null;
             }
+
             return;
         }
 
         if (!cell.IsEmpty && cell.PlacedChecker.GameColor != CurrentPlayer.GameColor) return;
-        
+
         if (!cell.IsEmpty && (!MoveData.StartCellLocked || MoveData.StartCell == cell))
         {
             if (MoveData.StartCell != null)
@@ -151,7 +156,7 @@ public class GameManager : MonoBehaviour
 
             cell.RisePlacedObject();
             _soundControl.PlaySound(SoundEffectType.Rise);
-            
+
             MoveData.StartCell = cell;
         }
 
@@ -164,11 +169,11 @@ public class GameManager : MonoBehaviour
         }
 
         if (!MoveData.StartCellLocked || MoveData.StartCell != CurrentlySelectedCell) return;
-        
+
         MoveData.DestCell = cell;
         TryToBeatEnemyChecker(MoveData);
     }
-    
+
     private void SetInitialPlayer()
     {
         CurrentPlayer = _players[0];
@@ -177,7 +182,7 @@ public class GameManager : MonoBehaviour
     private void DeactivateCurrentPlayer()
     {
         CurrentPlayer.CellWasSelected -= TryToMove;
-      //  CurrentPlayer.Deactivate();
+        //  CurrentPlayer.Deactivate();
     }
 
     private void ActivateCurrentPlayer()
