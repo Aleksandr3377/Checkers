@@ -8,9 +8,8 @@ namespace SoundEffects
     {
         [SerializeField] private List<Button> _buttons = new();
 
-        protected override void Start()
+        private  void Start()
         {
-            base.Start();
             foreach (var button in _buttons)
             {
                 button.onClick.AddListener(() => PlaySound(SoundEffectType.SelectButton));

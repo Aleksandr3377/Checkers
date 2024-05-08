@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 6aac568ebf8b44c448ae2317cc3f7c3d, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44824868, g: 0.49827558, b: 0.57558274, a: 1}
+  m_IndirectSpecularColor: {r: 0.52744406, g: 0.35284045, b: 0.35672194, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -315,7 +315,8 @@ MonoBehaviour:
   DefinedWinner: {fileID: 919438295}
   _playerSpawner: {fileID: 195903023}
   _timeScale: 1
-  _soundControl: {fileID: 1808541661}
+  _soundControl: {fileID: 1808541663}
+  _particleEffectController: {fileID: 1816712709}
 --- !u!4 &144754832
 Transform:
   m_ObjectHideFlags: 0
@@ -669,6 +670,100 @@ Transform:
   - {fileID: 1857574725}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &837242139
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 837242141}
+  - component: {fileID: 837242140}
+  m_Layer: 0
+  m_Name: Directional Light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!108 &837242140
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837242139}
+  m_Enabled: 1
+  serializedVersion: 10
+  m_Type: 1
+  m_Shape: 0
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 1
+  m_Range: 10
+  m_SpotAngle: 30
+  m_InnerSpotAngle: 21.80208
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
+--- !u!4 &837242141
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837242139}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalPosition: {x: 4.64895, y: 5.392438, z: 4.416058}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &902848988
 GameObject:
   m_ObjectHideFlags: 0
@@ -771,14 +866,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 902848988}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d7bf60a44ee46329ee7ddddebafb924, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _checkerBoard: {fileID: 753552546}
-  Smoothness: 0.5
-  _zoomSpeed: 1000
+  Smoothness: 2
+  ZoomSpeed: 5
   MinZoom: 5
   MaxZoom: 20
 --- !u!114 &902848993
@@ -809,11 +904,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _checkerBoard: {fileID: 753552546}
-  Smoothness: 0.5
-  _zoomSpeed: 1000
-  MinZoom: 1
-  MaxZoom: 10
-  _zoomSpeedForTouchScreen: 3
+  Smoothness: 2
+  ZoomSpeed: 1000
+  MinZoom: 5
+  MaxZoom: 20
+  _zoomSpeedForTouchScreen: 0.01
 --- !u!1 &919438293
 GameObject:
   m_ObjectHideFlags: 0
@@ -1456,7 +1551,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1808541662}
-  - component: {fileID: 1808541661}
+  - component: {fileID: 1808541663}
   m_Layer: 0
   m_Name: SoundControl
   m_TagString: Untagged
@@ -1464,25 +1559,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1808541661
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1808541660}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29be22d38e70414aae852ebe577bc995, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _soundEffects:
-  - Clip: {fileID: 8300000, guid: 880d0a03d81941e44a2e5daafd94fa1a, type: 3}
-    SoundEffectType: 0
-  - Clip: {fileID: 8300000, guid: a55c8f03d11da184aa200e26bcbd3f17, type: 3}
-    SoundEffectType: 1
-  - Clip: {fileID: 8300000, guid: 64256e39764690e409b6f3ec209a0671, type: 3}
-    SoundEffectType: 2
 --- !u!4 &1808541662
 Transform:
   m_ObjectHideFlags: 0
@@ -1493,6 +1569,70 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 598.8331, y: 157.9933, z: 0.6242446}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1808541663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1808541660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 784579c9854347ca845991de51f8f473, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _soundEffects:
+  - Clip: {fileID: 8300000, guid: 880d0a03d81941e44a2e5daafd94fa1a, type: 3}
+    SoundEffectType: 0
+  - Clip: {fileID: 8300000, guid: a55c8f03d11da184aa200e26bcbd3f17, type: 3}
+    SoundEffectType: 1
+  - Clip: {fileID: 8300000, guid: 64256e39764690e409b6f3ec209a0671, type: 3}
+    SoundEffectType: 2
+--- !u!1 &1816712708
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1816712710}
+  - component: {fileID: 1816712709}
+  m_Layer: 0
+  m_Name: ParticleController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1816712709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1816712708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8adbb20280414af68cf05392ac6ed36b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _particleEffectPrefab: {fileID: 8049546757735675356, guid: fb15306fea8c3484ba4565a50de93d2d, type: 3}
+--- !u!4 &1816712710
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1816712708}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 24.419538, y: 2.3588371, z: 4.7651615}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1649,7 +1789,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &1821208403
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2125,3 +2265,5 @@ SceneRoots:
   - {fileID: 1821208406}
   - {fileID: 1808541662}
   - {fileID: 477815509}
+  - {fileID: 1816712710}
+  - {fileID: 837242141}
