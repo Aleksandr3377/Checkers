@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -9,6 +8,19 @@ namespace SoundEffects
     {
         [SerializeField] private List<AudioClip> _audioClips;
         private AudioSource _audioSource;
+        private static AmbientSounds _instance;
+
+        private void Awake()
+        {
+            if (_instance != null && _instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            _instance = this; // без цього не працювало
+        }
+
         private void Start()
         {
             DontDestroyOnLoad(gameObject);
@@ -30,7 +42,7 @@ namespace SoundEffects
             _audioSource.clip = _audioClips[randomSoundIndex];
             _audioSource.Play();
         }
-        
+
         private bool IsSoundEnded()
         {
             return !_audioSource.isPlaying;
