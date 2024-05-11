@@ -4,6 +4,7 @@ using SoundEffects;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -15,6 +16,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private ScoreManager _scoreManager;
     [SerializeField] private CheckerBoard _checkerBoard;
     [SerializeField] private Button _buttonRestart;
+    [SerializeField] private Button _moveToMenu;
+    [SerializeField] private TextMeshProUGUI _warning;
     [SerializeField] public TextMeshProUGUI DefinedWinner;
     [SerializeField] private PlayerSpawner _playerSpawner;
     [SerializeField] private float _timeScale = 1;
@@ -37,6 +40,7 @@ public class GameManager : MonoBehaviour
         DeactivateAllPlayers();
         SwitchPlayer();
         _buttonRestart.gameObject.SetActive(false);
+        _moveToMenu.onClick.AddListener(RestartGame);
     }
 
     private void SwitchPlayer()
@@ -53,6 +57,20 @@ public class GameManager : MonoBehaviour
 
         ActivateCurrentPlayer();
         _rulesManager.CheckPossibilityOfMovements();
+    }
+
+    private void Update()
+    {
+        if (MoveData.StartCellLocked)
+        {
+            _warning.gameObject.SetActive(true);
+            _warning.text = $"You must beat enemy checker";
+        }
+        
+        else
+        {
+            _warning.gameObject.SetActive(false);
+        }
     }
 
     private void MakeMove(MoveData moveData)
@@ -85,7 +103,9 @@ public class GameManager : MonoBehaviour
 
         _movementManager.MoveCheckerToCell(moveData.StartCell, moveData.DestCell, OnMoveFinished);
         _soundControl.PlaySound(SoundEffectType.Beat);
-        _particleEffectController.CreateParticleEffect(moveData.DestCell.transform.position);
+        var cellBetweenStartAndDestCells =
+            _gameBoardHelper.GetCellBetweenStartAndDestCells(moveData.StartCell.Position, moveData.DestCell.Position);
+        _particleEffectController.CreateParticleEffect(cellBetweenStartAndDestCells.Anchor.transform.position);
         var enemyPosition =
             _gameBoardHelper.GetCellBetweenStartAndDestCells(moveData.StartCell.Position, moveData.DestCell.Position);
         RemoveChecker(enemyPosition);
