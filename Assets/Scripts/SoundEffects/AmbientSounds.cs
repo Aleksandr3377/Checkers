@@ -7,23 +7,24 @@ namespace SoundEffects
     public class AmbientSounds : MonoBehaviour
     {
         [SerializeField] private List<AudioClip> _audioClips;
+        [SerializeField] private float _volume = 0.2f;
         private AudioSource _audioSource;
         private static AmbientSounds _instance;
 
         private void Awake()
         {
-            if (_instance != null && _instance != this)
+            if (_instance != null)
             {
                 Destroy(gameObject);
                 return;
             }
-
-            _instance = this; // без цього не працювало
+            
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
         }
 
         private void Start()
         {
-            DontDestroyOnLoad(gameObject);
             _audioSource = gameObject.AddComponent<AudioSource>();
             PlayRandomSound();
         }
@@ -38,7 +39,7 @@ namespace SoundEffects
         private void PlayRandomSound()
         {
             var randomSoundIndex = Random.Range(0, _audioClips.Count);
-            _audioSource.volume = 0.2f;
+            _audioSource.volume = _volume;
             _audioSource.clip = _audioClips[randomSoundIndex];
             _audioSource.Play();
         }
