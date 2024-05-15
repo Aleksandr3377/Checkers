@@ -113,9 +113,10 @@ public class GameManager : MonoBehaviour
         var isPlayerShouldBeatAnotherChecker = _rulesManager.CanUserBeatEnemy(moveData.DestCell);
         if (isPlayerShouldBeatAnotherChecker)
         {
-            moveData.StartCellLocked = false;
-            moveData.StartCell = moveData.DestCell;
-            moveData.StartCellLocked = true;
+         //   moveData.StartCellLocked = false;
+            moveData.RestrictToMoveCell.Clear();
+            moveData.RestrictToMoveCell.Add(moveData.DestCell);
+          //  moveData.StartCellLocked = true;
         }
 
         void OnMoveFinished()
@@ -126,7 +127,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                moveData.StartCellLocked = false;
+              //  moveData.StartCellLocked = false;
                 SwitchPlayer();
                 _rulesManager.CheckIfPlayerMustBeatEnemyChecker();
             }
@@ -166,7 +167,7 @@ public class GameManager : MonoBehaviour
 
         if (!cell.IsEmpty && cell.PlacedChecker.GameColor != CurrentPlayer.GameColor) return;
 
-        if (!cell.IsEmpty && (!MoveData.StartCellLocked || MoveData.StartCell == cell))
+        if (!cell.IsEmpty && (!MoveData.StartCellLocked || MoveData.RestrictToMoveCell.Contains(cell)))
         {
             if (MoveData.StartCell != null)
             {

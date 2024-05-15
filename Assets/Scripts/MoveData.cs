@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 public class MoveData
 {
      private GameBoardCell _startCell;
+     public readonly List<GameBoardCell> RestrictToMoveCell = new();
      public GameBoardCell StartCell
      {
           get => _startCell;
@@ -12,7 +15,7 @@ public class MoveData
                {
                     return;
                }
-               if (StartCellLocked)
+               if (StartCellLocked && !RestrictToMoveCell.Contains(value))
                {
                     throw new InvalidOperationException("Start cell is locked from modification");
                } 
@@ -20,6 +23,6 @@ public class MoveData
           }
      }
      public GameBoardCell DestCell;
-     public bool StartCellLocked { get; set; }
-   //  public List<GameBoardCell> QueenCells;
+
+     public bool StartCellLocked => RestrictToMoveCell.Any();
 }

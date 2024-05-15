@@ -109,13 +109,13 @@ public class RulesManager : MonoBehaviour
 
             if (CanUserBeatEnemy(cell))
             {
-                 _gameManager.MoveData.StartCellLocked = false;
-                 _gameManager.MoveData.StartCell = cell;
-                 _gameManager.MoveData.StartCellLocked = true;
-                break;
+                // _gameManager.MoveData.StartCellLocked = false;
+                 //_gameManager.MoveData.StartCell = cell;
+               //  _gameManager.MoveData.StartCellLocked = true;
+              _gameManager.MoveData.RestrictToMoveCell.Add(cell);
             }
 
-            _gameManager.MoveData.StartCellLocked = false;
+          //  _gameManager.MoveData.StartCellLocked = false;
         }
     }
 
