@@ -4,7 +4,6 @@ using SoundEffects;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -66,7 +65,7 @@ public class GameManager : MonoBehaviour
             _warning.gameObject.SetActive(true);
             _warning.text = $"You must beat enemy checker";
         }
-        
+
         else
         {
             _warning.gameObject.SetActive(false);
@@ -76,45 +75,46 @@ public class GameManager : MonoBehaviour
     private void MakeMove(MoveData moveData)
     {
         var playerDirection = _gameBoardHelper.GetPlayerDirection(CurrentPlayer.GameColor);
-        var startCell = moveData.StartCell;
+        var startCell = moveData.StartCells;
         var destCell = moveData.DestCell;
-        if (_rulesManager.IsCheckerCanBeMoved(playerDirection, startCell, destCell))
+        if (_rulesManager.IsCheckerCanBeMoved(playerDirection, startCell.First(), destCell))
         {
-            _movementManager.MoveCheckerToCell(startCell, destCell, () =>
+            _movementManager.MoveCheckerToCell(startCell.First(), destCell, () =>
             {
                 _soundControl.PlaySound(SoundEffectType.Move);
                 _rulesManager.CheckIfPlayerHasBeatenAllCheckers();
                 SwitchPlayer();
                 _rulesManager.CheckIfPlayerMustBeatEnemyChecker();
-                //  _rulesManager.CheckIfCheckerTransformedToQueen();
             });
         }
         else
         {
             TryToBeatEnemyChecker(moveData);
             _rulesManager.CheckIfPlayerHasBeatenAllCheckers();
-            // _rulesManager.CheckIfCheckerTransformedToQueen();
         }
     }
 
     private void TryToBeatEnemyChecker(MoveData moveData)
     {
-        if (!_rulesManager.CanUserBeatEnemy(moveData.StartCell, moveData.DestCell)) return;
-
-        _movementManager.MoveCheckerToCell(moveData.StartCell, moveData.DestCell, OnMoveFinished);
+        if (!_rulesManager.CanUserBeatEnemy(moveData.StartCells.First(), moveData.DestCell)) return;
+        
+        _movementManager.MoveCheckerToCell(moveData.StartCells.First(), moveData.DestCell, OnMoveFinished);
         _soundControl.PlaySound(SoundEffectType.Beat);
         var cellBetweenStartAndDestCells =
-            _gameBoardHelper.GetCellBetweenStartAndDestCells(moveData.StartCell.Position, moveData.DestCell.Position);
+            _gameBoardHelper.GetCellBetweenStartAndDestCells(moveData.StartCells.First().Position,
+                moveData.DestCell.Position);
         _particleEffectController.CreateParticleEffect(cellBetweenStartAndDestCells.Anchor.transform.position);
         var enemyPosition =
-            _gameBoardHelper.GetCellBetweenStartAndDestCells(moveData.StartCell.Position, moveData.DestCell.Position);
+            _gameBoardHelper.GetCellBetweenStartAndDestCells(moveData.StartCells.First().Position,
+                moveData.DestCell.Position);
         RemoveChecker(enemyPosition);
         _scoreManager.AddScore(CurrentPlayer.GameColor, 1);
         var isPlayerShouldBeatAnotherChecker = _rulesManager.CanUserBeatEnemy(moveData.DestCell);
         if (isPlayerShouldBeatAnotherChecker)
         {
             moveData.StartCellLocked = false;
-            moveData.StartCell = moveData.DestCell;
+            //   moveData.StartCells = moveData.DestCell;
+            moveData.SetCells(moveData.DestCell);
             moveData.StartCellLocked = true;
         }
 
@@ -122,7 +122,7 @@ public class GameManager : MonoBehaviour
         {
             if (_rulesManager.CanUserBeatEnemy(moveData.DestCell))
             {
-                CurrentPlayer.SelectCell(moveData.StartCell);
+                CurrentPlayer.SelectCell(moveData.StartCells.First());
             }
             else
             {
@@ -158,38 +158,60 @@ public class GameManager : MonoBehaviour
             _soundControl.PlaySound(SoundEffectType.Rise);
             if (!MoveData.StartCellLocked)
             {
-                MoveData.StartCell = null;
+                MoveData.StartCells = null;
             }
 
             return;
         }
 
-        if (!cell.IsEmpty && cell.PlacedChecker.GameColor != CurrentPlayer.GameColor) return;
-
-        if (!cell.IsEmpty && (!MoveData.StartCellLocked || MoveData.StartCell == cell))
+        if (!cell.IsEmpty && cell.PlacedChecker.GameColor != CurrentPlayer.GameColor)
         {
-            if (MoveData.StartCell != null)
+            Debug.LogWarning("EnemyCell is selected");
+            return;
+        }
+
+        if (!cell.IsEmpty && (!MoveData.StartCellLocked || MoveData.StartCells.Contains(cell)))
+        {
+            //todo: потрібно опустити FirstOrDefault
+            
+            if (MoveData.StartCells.FirstOrDefault(x=>x.HasRisenPlacedObject) != null)
             {
-                MoveData.StartCell.MovePlacedObjectToGround();
+                MoveData.StartCells.First(x=>x.HasRisenPlacedObject).MovePlacedObjectToGround();
                 _soundControl.PlaySound(SoundEffectType.Rise);
             }
 
             cell.RisePlacedObject();
             _soundControl.PlaySound(SoundEffectType.Rise);
 
-            MoveData.StartCell = cell;
+            MoveData.SetCells(cell);
         }
 
-        if (!_rulesManager.IsCheckerCanBeMovedToNeighbourCell(cell)) return;
+        if (!_rulesManager.IsCheckerCanBeMovedToNeighbourCell(cell))
+        {
+            Debug.LogWarning("Can not move to neighbour cell");
+            return;
+        }
 
         if (!MoveData.StartCellLocked)
         {
             MoveData.DestCell = cell;
             MakeMove(MoveData);
         }
-
-        if (!MoveData.StartCellLocked || MoveData.StartCell != CurrentlySelectedCell) return;
-
+        
+        if (!MoveData.StartCellLocked || !MoveData.StartCells.Contains(CurrentlySelectedCell))
+        {
+            if (!MoveData.StartCellLocked)
+            {
+                Debug.LogWarning("Start cell is not locked ");
+            }
+            else
+            {
+                Debug.LogWarning("MoveData.StartCells.Contains(CurrentlySelectedCell) ");
+            }
+            Debug.LogWarning("Start cell ");
+            return;
+        }
+        
         MoveData.DestCell = cell;
         TryToBeatEnemyChecker(MoveData);
     }

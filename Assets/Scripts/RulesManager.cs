@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -9,6 +10,22 @@ public class RulesManager : MonoBehaviour
     [SerializeField] private ScoreManager _scoreManager;
     private MoveData _moveData;
 
+    private List<GameBoardCell> GetCheckersThatCanBeat()
+    {
+        var checkersThatCanBeat = new List<GameBoardCell>();
+        foreach (var cell in _checkerBoard.Cells)
+        {
+            if (cell.IsEmpty || cell.PlacedChecker.GameColor != _gameManager.CurrentPlayer.GameColor) continue;
+
+            if (CanUserBeatEnemy(cell))
+            {
+                checkersThatCanBeat.Add(cell);
+            }
+        }
+
+        return checkersThatCanBeat;
+    }
+    
     public bool CanUserBeatEnemy(GameBoardCell currentCell, GameBoardCell selectedCell)
     {
         if (!CanJump(currentCell.Position, selectedCell.Position)) return false;
@@ -103,47 +120,16 @@ public class RulesManager : MonoBehaviour
 
     public void CheckIfPlayerMustBeatEnemyChecker()
     {
-        foreach (var cell in _checkerBoard.Cells)
+        var checkersThatCanBeatEnemy = GetCheckersThatCanBeat();
+        if (checkersThatCanBeatEnemy.Count > 0)
         {
-            if (cell.IsEmpty || cell.PlacedChecker.GameColor != _gameManager.CurrentPlayer.GameColor) continue;
-
-            if (CanUserBeatEnemy(cell))
-            {
-                 _gameManager.MoveData.StartCellLocked = false;
-                 _gameManager.MoveData.StartCell = cell;
-                 _gameManager.MoveData.StartCellLocked = true;
-                break;
-            }
-
+            _gameManager.MoveData.StartCellLocked = false;
+            _gameManager.MoveData.SetCells(checkersThatCanBeatEnemy.ToArray());
+            _gameManager.MoveData.StartCellLocked = true;
+        }
+        else
+        {
             _gameManager.MoveData.StartCellLocked = false;
         }
     }
-
-    // public void CheckIfCheckerTransformedToQueen()
-    // {
-    //     for (var row = 0; row < _checkerBoard.Rows; row++)
-    //     {
-    //         for (var column = 0; column < _checkerBoard.Colums; column++)
-    //         {
-    //             var cell = _checkerBoard.Cells[row, column];
-    //             if (!cell.IsEmpty && _gameManager.CurrentPlayer.GameColor == GameColor.White)
-    //             {
-    //                 var positionWhereCellCanTransformToChecker = 7;
-    //
-    //                 if (cell != _checkerBoard.Cells[positionWhereCellCanTransformToChecker, column]) continue;
-    //
-    //                 _moveData.QueenCells.Add(cell);
-    //                     // _gameBoardHelper.TransformCheckerToQueen(cell);
-    //             }
-    //             else
-    //             {
-    //                 var positionWhereCellCanTransformToChecker = 0;
-    //                 if (cell != _checkerBoard.Cells[positionWhereCellCanTransformToChecker, column]) continue;
-    //
-    //                 _moveData.QueenCells.Add(cell);
-    //                // _gameBoardHelper.TransformCheckerToQueen(cell);
-    //             }
-    //         }
-    //     }
-    // }
 }

@@ -8,12 +8,6 @@ public class GameBoardCell : MonoBehaviour
     public bool HasRisenPlacedObject { get; private set; }
     public bool IsEmpty => PlacedChecker == null;
     public Vector2Int Position { get; private set; } 
-  //  private SoundControl _soundControl;
-
-    // public void Init(SoundControl soundControl)
-    // {
-    //     _soundControl = soundControl;
-    // }
     
     public void InitCell(Vector2Int position)
     {

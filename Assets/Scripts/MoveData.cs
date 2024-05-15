@@ -1,25 +1,33 @@
 using System;
+using System.Collections.Generic;
 
 public class MoveData
 {
-     private GameBoardCell _startCell;
-     public GameBoardCell StartCell
+     private List<GameBoardCell> _startCells = new();
+     public List<GameBoardCell> StartCells
      {
-          get => _startCell;
+          get => _startCells;
           set
           {
-               if (value == StartCell)
+               if (value == StartCells)
                {
                     return;
                }
+               
                if (StartCellLocked)
                {
                     throw new InvalidOperationException("Start cell is locked from modification");
+                    
                } 
-               _startCell = value;
+               _startCells = value;
           }
      }
      public GameBoardCell DestCell;
      public bool StartCellLocked { get; set; }
-   //  public List<GameBoardCell> QueenCells;
+
+     public void SetCells(params GameBoardCell[] gameBoardCell)
+     {
+         _startCells.Clear();
+         _startCells.AddRange(gameBoardCell);
+     }
 }
