@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SoundEffects;
 using TMPro;
@@ -86,14 +87,12 @@ public class GameManager : MonoBehaviour
                 _rulesManager.CheckIfPlayerHasBeatenAllCheckers();
                 SwitchPlayer();
                 _rulesManager.CheckIfPlayerMustBeatEnemyChecker();
-                //  _rulesManager.CheckIfCheckerTransformedToQueen();
             });
         }
         else
         {
             TryToBeatEnemyChecker(moveData);
             _rulesManager.CheckIfPlayerHasBeatenAllCheckers();
-            // _rulesManager.CheckIfCheckerTransformedToQueen();
         }
     }
 
@@ -113,10 +112,8 @@ public class GameManager : MonoBehaviour
         var isPlayerShouldBeatAnotherChecker = _rulesManager.CanUserBeatEnemy(moveData.DestCell);
         if (isPlayerShouldBeatAnotherChecker)
         {
-         //   moveData.StartCellLocked = false;
-            moveData.RestrictToMoveCell.Clear();
-            moveData.RestrictToMoveCell.Add(moveData.DestCell);
-          //  moveData.StartCellLocked = true;
+            moveData.RestrictedCellsWithCheckers.Clear();
+            moveData.RestrictedCellsWithCheckers.Add(moveData.DestCell);
         }
 
         void OnMoveFinished()
@@ -127,9 +124,8 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-              //  moveData.StartCellLocked = false;
                 SwitchPlayer();
-                _rulesManager.CheckIfPlayerMustBeatEnemyChecker();
+                _rulesManager.CheckIfPlayerMustBeatEnemyChecker(); 
             }
         }
     }
@@ -167,7 +163,7 @@ public class GameManager : MonoBehaviour
 
         if (!cell.IsEmpty && cell.PlacedChecker.GameColor != CurrentPlayer.GameColor) return;
 
-        if (!cell.IsEmpty && (!MoveData.StartCellLocked || MoveData.RestrictToMoveCell.Contains(cell)))
+        if (!cell.IsEmpty && (!MoveData.StartCellLocked || MoveData.RestrictedCellsWithCheckers.Contains(cell)))
         {
             if (MoveData.StartCell != null)
             {
@@ -179,20 +175,31 @@ public class GameManager : MonoBehaviour
             _soundControl.PlaySound(SoundEffectType.Rise);
 
             MoveData.StartCell = cell;
+            _gameBoardHelper.RemoveOutline(MoveData.RestrictedCellsWithCheckers.ToArray());
         }
-
-        if (!_rulesManager.IsCheckerCanBeMovedToNeighbourCell(cell)) return;
-
-        if (!MoveData.StartCellLocked)
+        else
         {
-            MoveData.DestCell = cell;
-            MakeMove(MoveData);
+            if (cell.PlacedChecker)
+            {
+                var filtratedCells = GetCellsThatShouldBeatWithCurrentPlayerGameColor(); 
+                _gameBoardHelper.AddOutlineOntoCheckers(filtratedCells.ToArray());
+            }
         }
 
-        if (!MoveData.StartCellLocked || MoveData.StartCell != CurrentlySelectedCell) return;
+        if (_rulesManager.IsCheckerCanBeMovedToNeighbourCell(cell))
+        {
+            if (!MoveData.StartCellLocked)
+            {
+                MoveData.DestCell = cell;
+                MakeMove(MoveData);
+            }
 
-        MoveData.DestCell = cell;
-        TryToBeatEnemyChecker(MoveData);
+            if (MoveData.StartCellLocked && MoveData.StartCell == CurrentlySelectedCell)
+            {
+                MoveData.DestCell = cell;
+                TryToBeatEnemyChecker(MoveData);
+            }
+        }
     }
 
     private void SetInitialPlayer()
@@ -237,5 +244,19 @@ public class GameManager : MonoBehaviour
             nextPlayerIndex = currentIndex + 1;
 
         return nextPlayerIndex;
+    }
+
+    private List<GameBoardCell> GetCellsThatShouldBeatWithCurrentPlayerGameColor()
+    {
+        var listWithRightCells = new List<GameBoardCell>();
+        foreach (var cell in MoveData.RestrictedCellsWithCheckers)
+        {
+            if (cell.PlacedChecker.GameColor == CurrentPlayer.GameColor)
+            {
+                listWithRightCells.Add(cell);
+            }
+        }
+
+        return listWithRightCells;
     }
 }

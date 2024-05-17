@@ -5,7 +5,7 @@ using System.Linq;
 public class MoveData
 {
      private GameBoardCell _startCell;
-     public readonly List<GameBoardCell> RestrictToMoveCell = new();
+     public readonly List<GameBoardCell> RestrictedCellsWithCheckers = new();
      public GameBoardCell StartCell
      {
           get => _startCell;
@@ -15,7 +15,7 @@ public class MoveData
                {
                     return;
                }
-               if (StartCellLocked && !RestrictToMoveCell.Contains(value))
+               if (StartCellLocked && !RestrictedCellsWithCheckers.Contains(value))
                {
                     throw new InvalidOperationException("Start cell is locked from modification");
                } 
@@ -24,5 +24,5 @@ public class MoveData
      }
      public GameBoardCell DestCell;
 
-     public bool StartCellLocked => RestrictToMoveCell.Any();
+     public bool StartCellLocked => RestrictedCellsWithCheckers.Any();
 }

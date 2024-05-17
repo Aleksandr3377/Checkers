@@ -109,41 +109,8 @@ public class RulesManager : MonoBehaviour
 
             if (CanUserBeatEnemy(cell))
             {
-                // _gameManager.MoveData.StartCellLocked = false;
-                 //_gameManager.MoveData.StartCell = cell;
-               //  _gameManager.MoveData.StartCellLocked = true;
-              _gameManager.MoveData.RestrictToMoveCell.Add(cell);
+               _gameManager.MoveData.RestrictedCellsWithCheckers.Add(cell);
             }
-
-          //  _gameManager.MoveData.StartCellLocked = false;
         }
     }
-
-    // public void CheckIfCheckerTransformedToQueen()
-    // {
-    //     for (var row = 0; row < _checkerBoard.Rows; row++)
-    //     {
-    //         for (var column = 0; column < _checkerBoard.Colums; column++)
-    //         {
-    //             var cell = _checkerBoard.Cells[row, column];
-    //             if (!cell.IsEmpty && _gameManager.CurrentPlayer.GameColor == GameColor.White)
-    //             {
-    //                 var positionWhereCellCanTransformToChecker = 7;
-    //
-    //                 if (cell != _checkerBoard.Cells[positionWhereCellCanTransformToChecker, column]) continue;
-    //
-    //                 _moveData.QueenCells.Add(cell);
-    //                     // _gameBoardHelper.TransformCheckerToQueen(cell);
-    //             }
-    //             else
-    //             {
-    //                 var positionWhereCellCanTransformToChecker = 0;
-    //                 if (cell != _checkerBoard.Cells[positionWhereCellCanTransformToChecker, column]) continue;
-    //
-    //                 _moveData.QueenCells.Add(cell);
-    //                // _gameBoardHelper.TransformCheckerToQueen(cell);
-    //             }
-    //         }
-    //     }
-    // }
 }

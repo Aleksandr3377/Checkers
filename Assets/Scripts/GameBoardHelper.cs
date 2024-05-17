@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameBoardHelper : MonoBehaviour
@@ -85,12 +86,23 @@ public class GameBoardHelper : MonoBehaviour
         return playerDirection;
     }
 
-    // public void TransformCheckerToQueen(GameBoardCell cell)
-    // {
-    //     if (cell.IsEmpty) return;
-    //     
-    //     var currentRotation = cell.PlacedChecker.transform.rotation;
-    //     var newRotation = Quaternion.Euler(currentRotation.eulerAngles.x, currentRotation.eulerAngles.y + 180f, currentRotation.eulerAngles.z);
-    //     transform.rotation = newRotation;
-    // }
+    public void AddOutlineOntoCheckers(params GameBoardCell[] cellsWithCheckers)
+    {
+        foreach (var cell in cellsWithCheckers)
+        {
+            cell.PlacedChecker.AddComponent<Outline>();
+            var outline = cell.PlacedChecker.GetComponent<Outline>();
+            outline.OutlineColor = Color.white;
+            outline.OutlineWidth = 10f;
+        }
+    }
+
+    public void RemoveOutline(params GameBoardCell[] cellsWithCheckers)
+    {
+        foreach (var cell in cellsWithCheckers)
+        {
+            var outline = cell.PlacedChecker.GetComponent<Outline>();
+            Destroy(outline);
+        }
+    }
 }

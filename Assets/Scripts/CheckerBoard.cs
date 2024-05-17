@@ -11,7 +11,6 @@ public class CheckerBoard : MonoBehaviour
     [SerializeField] private Checker _checkerPrefab;
     [SerializeField] private GameObject _checkersParent;
     [SerializeField] private GameBoardCell _gameBoardCellPrefab;
-    // [SerializeField] private SoundControl _soundControl;
 
     private void Awake()
     {
@@ -29,7 +28,6 @@ public class CheckerBoard : MonoBehaviour
                 var currentColor = (row + colum) % 2 == 0 ? _gameBoardCellBlack : _gameBoardCellWhite;
                 var cell = Instantiate(_gameBoardCellPrefab, new Vector3(row, 0, colum), Quaternion.identity,
                     transform);
-                // cell.Init(_soundControl);
                 _gameBoardCellPrefab.ChangeColor(cell.gameObject, currentColor);
                 cell.gameObject.SetActive(true);
                 cell.InitCell(new Vector2Int(row, colum));
