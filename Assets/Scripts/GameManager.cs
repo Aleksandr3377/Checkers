@@ -120,7 +120,7 @@ public class GameManager : MonoBehaviour
         {
             if (_rulesManager.CanUserBeatEnemy(moveData.DestCell))
             {
-                CurrentPlayer.SelectCell(moveData.StartCell);
+                CurrentPlayer.SelectCell(moveData.DestCell);
             }
             else
             {

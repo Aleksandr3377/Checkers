@@ -57,7 +57,6 @@ public sealed class BotControl : PlayerControlBase
         
         var cellWithCheckerToBeat = Random.Range(0, cellsThatCanBeat.Count - 1);
         return cellsThatCanBeat[cellWithCheckerToBeat];
-
     }
 
     private void ExecuteMove(GameBoardCell startCell, GameBoardCell destCell)

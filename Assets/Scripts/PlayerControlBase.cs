@@ -16,7 +16,6 @@ public abstract class PlayerControlBase:MonoBehaviour
 
     protected void OnCellSelected(GameBoardCell cell, GameColor color)
     {
-       // Deactivate();
         CellWasSelected?.Invoke(cell,color);
     }
     
