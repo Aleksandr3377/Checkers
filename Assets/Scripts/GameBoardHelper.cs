@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameBoardHelper : MonoBehaviour
 {
+    [SerializeField] private float _outlineWidth = 7f;
     [SerializeField] private CheckerBoard _checkerBoard;
     [SerializeField] private RulesManager _rulesManager;
 
@@ -93,11 +95,12 @@ public class GameBoardHelper : MonoBehaviour
             cell.PlacedChecker.AddComponent<Outline>();
             var outline = cell.PlacedChecker.GetComponent<Outline>();
             outline.OutlineColor = Color.white;
-            outline.OutlineWidth = 10f;
+            outline.OutlineWidth = _outlineWidth;
+            DOTween.To(() => outline.OutlineWidth, x => outline.OutlineWidth = x, 0f,2f).OnComplete(()=> RemoveOutline(cell));
         }
     }
 
-    public void RemoveOutline(params GameBoardCell[] cellsWithCheckers)
+    private void RemoveOutline(params GameBoardCell[] cellsWithCheckers)
     {
         foreach (var cell in cellsWithCheckers)
         {

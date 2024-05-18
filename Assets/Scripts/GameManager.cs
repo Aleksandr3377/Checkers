@@ -175,7 +175,6 @@ public class GameManager : MonoBehaviour
             _soundControl.PlaySound(SoundEffectType.Rise);
 
             MoveData.StartCell = cell;
-            _gameBoardHelper.RemoveOutline(MoveData.RestrictedCellsWithCheckers.ToArray());
         }
         else
         {
@@ -210,7 +209,6 @@ public class GameManager : MonoBehaviour
     private void DeactivateCurrentPlayer()
     {
         CurrentPlayer.CellWasSelected -= TryToMove;
-        //  CurrentPlayer.Deactivate();
     }
 
     private void ActivateCurrentPlayer()
