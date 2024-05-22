@@ -10,5 +10,17 @@ public abstract class CameraControlBase : MonoBehaviour
     {
         Target = new GameObject("Target").transform;
         Target.position = _checkerBoard.CalculateCenterOfDesk();
+        CenterCameraOnBoard();
+    }
+    
+    private void CenterCameraOnBoard()
+    {
+        var centerOfBoard = _checkerBoard.CalculateCenterOfDesk();
+        gameObject.transform.position = new Vector3(
+            centerOfBoard.x, 
+            centerOfBoard.y + 10,
+            centerOfBoard.z - 10 
+        );
+        gameObject.transform.LookAt(centerOfBoard);
     }
 }
