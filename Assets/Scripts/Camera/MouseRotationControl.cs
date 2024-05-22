@@ -7,14 +7,14 @@ public class MouseRotationControl : OrbitControlBase
     protected override float GetDeltaRotX()
     {
         var deltaRotX = GetMouseDelta().y * RotationSpeed;
-        var nextRotX = _finalRotX + deltaRotX;
+        var nextRotX = FinalRotX + deltaRotX;
         if (nextRotX > _maxRotationX)
         {
-            deltaRotX = _maxRotationX - _finalRotX;
+            deltaRotX = _maxRotationX - FinalRotX;
         }
         else if (nextRotX < -_maxRotationX)
         {
-            deltaRotX = _maxRotationX - _finalRotX;
+            deltaRotX = _maxRotationX - FinalRotX;
         }
 
         return deltaRotX;
