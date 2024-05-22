@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CheckerBoard : MonoBehaviour
@@ -11,6 +12,8 @@ public class CheckerBoard : MonoBehaviour
     [SerializeField] private Checker _checkerPrefab;
     [SerializeField] private GameObject _checkersParent;
     [SerializeField] private GameBoardCell _gameBoardCellPrefab;
+    [SerializeField] private List<Transform> _spawnPoints = new();
+    [SerializeField] private GameObject _checkerBoard;
 
     private void Awake()
     {
@@ -21,12 +24,17 @@ public class CheckerBoard : MonoBehaviour
     private void InstantiateCheckerBoard()
     {
         Cells = new GameBoardCell[Rows, Colums];
+        var randomPointIndex = Random.Range(0, _spawnPoints.Count);
+        var randomPointPosition = _spawnPoints[randomPointIndex];
+        gameObject.transform.position = randomPointPosition.position;
         for (var row = 0; row < Rows; row++)
         {
             for (var colum = 0; colum < Colums; colum++)
             {
                 var currentColor = (row + colum) % 2 == 0 ? _gameBoardCellBlack : _gameBoardCellWhite;
-                var cell = Instantiate(_gameBoardCellPrefab, new Vector3(row, 0, colum), Quaternion.identity,
+                var cell = Instantiate(_gameBoardCellPrefab,
+                    new Vector3(randomPointPosition.position.x + row, randomPointPosition.position.y,
+                        randomPointPosition.position.z + colum), Quaternion.identity,
                     transform);
                 _gameBoardCellPrefab.ChangeColor(cell.gameObject, currentColor);
                 cell.gameObject.SetActive(true);
